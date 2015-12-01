@@ -13,10 +13,11 @@ type WlanSettings struct {
 }
 
 type WlanInterface struct {
-	Protocol string `json:"protocol"`
-	Ssid     string `json:"ssid"`
-	Channel  string `json:"channel"`
-	Quality  int8   `json:"quality"`
+	ApMac     string `json:"apmac"`
+	Frequency string `json:"frequency"`
+	Channel   string `json:"channel"`
+	Protocol  string `json:"protocol"`
+	Essid     string `json:"essid"`
 }
 
 type InterfacesRequest struct {
