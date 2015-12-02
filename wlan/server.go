@@ -1,6 +1,7 @@
 package wlan
 
 import (
+	"encoding/json"
 	"golang.struktur.de/spreedbox/spreedbox-conf/conf"
 	"golang.struktur.de/spreedbox/spreedbox-go/bus"
 	"golang.struktur.de/spreedbox/spreedbox-network/network"
@@ -33,9 +34,6 @@ func (s *Server) Serve() (err error) {
 	s.ec.Subscribe(WlanSubjectInterfaces(), s.interfaces)
 	s.ec.Subscribe(WlanSubjectScan(), s.scan)
 	log.Println("events connected and subscribed")
-
-	s.interfaces("lala", "", &InterfacesRequest{})
-	s.scan("lala", "", &ScanRequest{Name: "wlan0"})
 
 	ch := make(chan os.Signal)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
@@ -91,6 +89,9 @@ func (s *Server) scan(subject, reply string, msg *ScanRequest) {
 	if err != nil {
 		log.Println("failed to scan", err)
 	}
+
+	pretty, _ := json.MarshalIndent(wlanCells, "", "\t")
+	log.Println("scan result", string(pretty))
 
 	if reply != "" {
 		replyData, err := conf.NewDataReply(wlanCells, err)

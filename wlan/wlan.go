@@ -27,7 +27,7 @@ type InterfacesRequest struct {
 
 type WlanCell struct {
 	linux.IWListCell
-	InformationElements []WlanCellInformationElement `json:"informationElements"`
+	InformationElements []*WlanCellInformationElement `json:"informationElements"`
 }
 
 type WlanCellInformationElement struct {
