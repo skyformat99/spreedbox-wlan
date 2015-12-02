@@ -1,6 +1,8 @@
 package wlan
 
 import (
+	"errors"
+	"golang.struktur.de/spreedbox/spreedbox-network/network"
 	"golang.struktur.de/spreedbox/spreedbox-wlan/wlan/linux"
 	"log"
 	"sync"
@@ -18,6 +20,9 @@ func NewScanner() *Scanner {
 }
 
 func (s *Scanner) Scan(interfaceName string) (cells []*linux.IWListCell, err error) {
+	if !network.IsInterfaceWifi(interfaceName) {
+		return nil, errors.New("interface has no wifi extensions")
+	}
 	s.Lock()
 	if !s.scanning {
 		s.wg.Add(1)
