@@ -12,6 +12,10 @@ import (
 	"syscall"
 )
 
+const (
+	DISCOVER_SERVICE_NAME = "wlan"
+)
+
 type Server struct {
 	ec      *bus.EncodedConn
 	scanner *Scanner
@@ -35,6 +39,7 @@ func (s *Server) Serve() (err error) {
 
 	s.ec.Subscribe(WlanSubjectInterfaces(), s.interfaces)
 	s.ec.Subscribe(WlanSubjectScan(), s.scan)
+	s.ec.RegisterService(DISCOVER_SERVICE_NAME)
 	log.Println("events connected and subscribed")
 
 	ch := make(chan os.Signal)
