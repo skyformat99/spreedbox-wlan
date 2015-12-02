@@ -23,6 +23,8 @@ func NewScanner() *Scanner {
 
 func (s *Scanner) Scan(interfaceName string) (cells []*linux.IWListCell, err error) {
 	if !network.IsInterfaceWifi(interfaceName) {
+		// NOTE: spreedbox-setup check for exactly this message to generate
+		// a proper error response.
 		return nil, errors.New("interface has no wifi extensions")
 	}
 	s.Lock()
@@ -46,6 +48,8 @@ func (s *Scanner) Scan(interfaceName string) (cells []*linux.IWListCell, err err
 			cells = val
 		} else {
 			cells = nil
+			// NOTE: spreedbox-setup check for exactly this message to generate
+			// a proper error response.
 			err = errors.New("no scan data for interface")
 		}
 		s.RUnlock()
