@@ -1,0 +1,4 @@
+tar-ignore
+tar-ignore = "vendor"
+tar-ignore = "vendor/*"
+

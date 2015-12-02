@@ -1,0 +1,28 @@
+Source: spreedbox-wlan
+Section: devel
+Priority: optional
+Maintainer: struktur AG <opensource@struktur.de>
+Uploaders: Joachim Bauch <bauch@struktur.de>
+Build-Depends: debhelper (>= 9),
+               dh-golang,
+               golang-go (>= 1.4.0),
+               golang-spreedbox-conf-dev (>= 0.0.3),
+               golang-spreedbox-go-dev,
+               golang-spreedbox-network-dev
+Standards-Version: 3.9.5
+
+Package: golang-spreedbox-wlan-dev
+Architecture: all
+Depends: ${misc:Depends},
+         golang-spreedbox-conf-dev (>= 0.0.3),
+         golang-spreedbox-go-dev,
+         golang-spreedbox-network-dev
+Description: Spreedbox Wlan development Go package
+ Spreedbox Wlan development Go package
+
+Package: spreedbox-wland
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Spreedbox Wlan daemon
+ Spreedbox Wlan daemon
+
