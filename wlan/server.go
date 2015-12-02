@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	DISCOVER_SERVICE_NAME = "wlan"
+	DISCOVER_WLAN_NAME = "wlan"
 )
 
 type Server struct {
@@ -39,7 +39,7 @@ func (s *Server) Serve() (err error) {
 
 	s.ec.Subscribe(WlanSubjectInterfaces(), s.interfaces)
 	s.ec.Subscribe(WlanSubjectScan(), s.scan)
-	s.ec.RegisterService(DISCOVER_SERVICE_NAME)
+	s.ec.RegisterService(DISCOVER_WLAN_NAME)
 	log.Println("events connected and subscribed")
 
 	ch := make(chan os.Signal)
