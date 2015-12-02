@@ -9,8 +9,8 @@ import (
 	"sync/atomic"
 )
 
-// deviceScanner scans a device exactly once
-type deviceScanner struct {
+// interfaceScanner scans a interface exactly once
+type interfaceScanner struct {
 	refCount int32
 
 	interfaceName string
@@ -20,7 +20,7 @@ type deviceScanner struct {
 	sync.Once
 }
 
-func (s *deviceScanner) scan() ([]*linux.IWListCell, error) {
+func (s *interfaceScanner) scan() ([]*linux.IWListCell, error) {
 	s.Do(func() {
 		iwlist := linux.NewIWList()
 		cells, err := iwlist.Scan(s.interfaceName)
@@ -36,12 +36,12 @@ func (s *deviceScanner) scan() ([]*linux.IWListCell, error) {
 
 type Scanner struct {
 	sync.Mutex
-	scanners map[string]*deviceScanner
+	scanners map[string]*interfaceScanner
 }
 
 func NewScanner() *Scanner {
 	return &Scanner{
-		scanners: make(map[string]*deviceScanner),
+		scanners: make(map[string]*interfaceScanner),
 	}
 }
 
@@ -55,7 +55,7 @@ func (s *Scanner) Scan(interfaceName string) (cells []*linux.IWListCell, err err
 	s.Lock()
 	scanner, found := s.scanners[interfaceName]
 	if !found {
-		scanner = &deviceScanner{
+		scanner = &interfaceScanner{
 			interfaceName: interfaceName,
 		}
 		s.scanners[interfaceName] = scanner
