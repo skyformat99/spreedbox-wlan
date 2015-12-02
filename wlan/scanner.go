@@ -12,11 +12,13 @@ type Scanner struct {
 	sync.RWMutex
 	wg       sync.WaitGroup
 	scanning bool
-	cells    []*linux.IWListCell
+	cells    map[string][]*linux.IWListCell
 }
 
 func NewScanner() *Scanner {
-	return &Scanner{}
+	return &Scanner{
+		cells: make(map[string][]*linux.IWListCell),
+	}
 }
 
 func (s *Scanner) Scan(interfaceName string) (cells []*linux.IWListCell, err error) {
@@ -32,7 +34,7 @@ func (s *Scanner) Scan(interfaceName string) (cells []*linux.IWListCell, err err
 		s.Lock()
 		s.scanning = false
 		if err == nil {
-			s.cells = cells
+			s.cells[interfaceName] = cells
 		}
 		s.wg.Done()
 		s.Unlock()
@@ -40,7 +42,12 @@ func (s *Scanner) Scan(interfaceName string) (cells []*linux.IWListCell, err err
 		s.Unlock()
 		s.wg.Wait()
 		s.RLock()
-		cells = s.cells
+		if val, ok := s.cells[interfaceName]; ok {
+			cells = val
+		} else {
+			cells = nil
+			err = errors.New("no scan data for interface")
+		}
 		s.RUnlock()
 	}
 	return cells, err
