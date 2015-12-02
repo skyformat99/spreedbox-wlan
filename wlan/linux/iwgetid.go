@@ -24,7 +24,7 @@ func (c *IWGetID) exec(interfaceName string, arg ...string) ([]byte, error) {
 	cmd := exec.Command("iwgetid", arguments...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Println("iwgetid failed", interfaceName, arg, err)
+		log.Println("iwgetid failed", interfaceName, arg, err, string(out))
 		return nil, err
 	}
 	return out, err

@@ -4,6 +4,7 @@ import (
 	"golang.struktur.de/spreedbox/spreedbox-conf/conf"
 	"golang.struktur.de/spreedbox/spreedbox-go/bus"
 	"golang.struktur.de/spreedbox/spreedbox-network/network"
+	"golang.struktur.de/spreedbox/spreedbox-wlan/wlan/linux"
 	"log"
 	"net"
 	"os"
@@ -30,7 +31,11 @@ func (s *Server) Serve() (err error) {
 	defer s.ec.Close()
 
 	s.ec.Subscribe(WlanSubjectInterfaces(), s.interfaces)
+	s.ec.Subscribe(WlanSubjectScan(), s.scan)
 	log.Println("events connected and subscribed")
+
+	s.interfaces("lala", "", &InterfacesRequest{})
+	s.scan("lala", "", &ScanRequest{Name: "wlan0"})
 
 	ch := make(chan os.Signal)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
@@ -47,12 +52,18 @@ func (s *Server) interfaces(subject, reply string, msg *InterfacesRequest) {
 	if interfaces, err := net.Interfaces(); err == nil {
 		interfacesResult := make(map[string]*WlanInterface)
 
+		iwgetid := linux.NewIWGetID()
+
 		for _, i := range interfaces {
 			if !network.IsInterfaceEthernet(i.Name) || !network.IsInterfaceWifi(i.Name) {
 				continue
 			}
 			wi := &WlanInterface{
-			// TODO(longsleep): Add details
+				ApAddress: iwgetid.Ap(i.Name),
+				Frequency: iwgetid.Freq(i.Name),
+				Channel:   iwgetid.Channel(i.Name),
+				Protocol:  iwgetid.Protocol(i.Name),
+				ESSID:     iwgetid.ESSID(i.Name),
 			}
 			interfacesResult[i.Name] = wi
 		}
@@ -64,6 +75,25 @@ func (s *Server) interfaces(subject, reply string, msg *InterfacesRequest) {
 
 	if reply != "" {
 		replyData, err := conf.NewDataReply(wls, nil)
+		if err != nil {
+			log.Println("failed to create interfaces reply", err)
+			return
+		}
+		s.ec.Publish(reply, replyData)
+	}
+}
+
+func (s *Server) scan(subject, reply string, msg *ScanRequest) {
+	log.Println("scan", subject, reply, msg.Name)
+
+	iwlist := linux.NewIWList()
+	wlanCells, err := iwlist.Scan(msg.Name)
+	if err != nil {
+		log.Println("failed to scan", err)
+	}
+
+	if reply != "" {
+		replyData, err := conf.NewDataReply(wlanCells, err)
 		if err != nil {
 			log.Println("failed to create interfaces reply", err)
 			return
