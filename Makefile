@@ -22,7 +22,8 @@ goget:
 	if [ -z "$(DEB_BUILDING)" ]; then GOPATH=$(GOPATH) go get launchpad.net/godeps; fi
 	if [ -z "$(DEB_BUILDING)" ]; then GOPATH=$(GOPATH) $(CURDIR)/vendor/bin/godeps -u dependencies.tsv; fi
 	mkdir -p $(shell dirname "$(CURDIR)/vendor/src/$(GOPKG)")
-	ln -sf $(PWD) $(shell dirname "$(CURDIR)/vendor/src/$(GOPKG)")
+	rm -f $(CURDIR)/vendor/src/$(GOPKG)
+	ln -sf $(PWD) $(CURDIR)/vendor/src/$(GOPKG)
 
 build: goget
 	GOPATH=$(GOPATH) go build $(shell find wlan* -type d -exec echo ./{} \;)
