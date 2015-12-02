@@ -6,18 +6,42 @@ import (
 	"golang.struktur.de/spreedbox/spreedbox-wlan/wlan/linux"
 	"log"
 	"sync"
+	"sync/atomic"
 )
 
+// interfaceScanner scans a interface exactly once
+type interfaceScanner struct {
+	refCount int32
+
+	interfaceName string
+	cells         []*linux.IWListCell
+	scanError     error
+
+	sync.Once
+}
+
+func (s *interfaceScanner) scan() ([]*linux.IWListCell, error) {
+	s.Do(func() {
+		iwlist := linux.NewIWList()
+		cells, err := iwlist.Scan(s.interfaceName)
+		if err != nil {
+			log.Println("failed to scan", err)
+		}
+		s.cells = cells
+		s.scanError = err
+	})
+
+	return s.cells, s.scanError
+}
+
 type Scanner struct {
-	sync.RWMutex
-	wg       sync.WaitGroup
-	scanning bool
-	cells    map[string][]*linux.IWListCell
+	sync.Mutex
+	scanners map[string]*interfaceScanner
 }
 
 func NewScanner() *Scanner {
 	return &Scanner{
-		cells: make(map[string][]*linux.IWListCell),
+		scanners: make(map[string]*interfaceScanner),
 	}
 }
 
@@ -27,41 +51,25 @@ func (s *Scanner) Scan(interfaceName string) (cells []*linux.IWListCell, err err
 		// a proper error response.
 		return nil, errors.New("interface has no wifi extensions")
 	}
-	s.Lock()
-	if !s.scanning {
-		s.wg.Add(1)
-		s.scanning = true
-		s.Unlock()
-		cells, err = s.scan(interfaceName)
-		s.Lock()
-		s.scanning = false
-		if err == nil {
-			s.cells[interfaceName] = cells
-		}
-		s.wg.Done()
-		s.Unlock()
-	} else {
-		s.Unlock()
-		s.wg.Wait()
-		s.RLock()
-		if val, ok := s.cells[interfaceName]; ok {
-			cells = val
-		} else {
-			cells = nil
-			// NOTE: spreedbox-setup check for exactly this message to generate
-			// a proper error response.
-			err = errors.New("no scan data for interface")
-		}
-		s.RUnlock()
-	}
-	return cells, err
-}
 
-func (s *Scanner) scan(interfaceName string) ([]*linux.IWListCell, error) {
-	iwlist := linux.NewIWList()
-	cells, err := iwlist.Scan(interfaceName)
-	if err != nil {
-		log.Println("failed to scan", err)
+	s.Lock()
+	scanner, found := s.scanners[interfaceName]
+	if !found {
+		scanner = &interfaceScanner{
+			interfaceName: interfaceName,
+		}
+		s.scanners[interfaceName] = scanner
 	}
+	s.Unlock()
+
+	atomic.AddInt32(&scanner.refCount, 1)
+	cells, err = scanner.scan()
+
+	if atomic.AddInt32(&scanner.refCount, -1) == 0 {
+		s.Lock()
+		delete(s.scanners, interfaceName)
+		s.Unlock()
+	}
+
 	return cells, err
 }
