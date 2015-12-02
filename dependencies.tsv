@@ -2,6 +2,6 @@ github.com/boltdb/bolt	git	ee716d1410cb44d1a6b7e59a96a2b2bec23366a9	2015-10-21T2
 github.com/evanphx/json-patch	git	766277e6183f343431bef432994d06c24459e3ef	2015-04-02T21:24:16Z
 github.com/nats-io/nats	git	6b568ec4b2991da0013ae7b3e525a80f9507f737	2015-09-18T06:55:12Z
 golang.struktur.de/spreedbox/spreedbox-conf	git	b1134e75e3ebcaa098d94708d1f3bbf03751a12b	2015-11-27T14:59:14Z
-golang.struktur.de/spreedbox/spreedbox-go	git	282e03f9a89dd46e2151a6743c52c5b1d374d0d4	2015-11-27T18:52:41Z
+golang.struktur.de/spreedbox/spreedbox-go	git	53f0ef979d4caac145bad6df312c45475bb372c6	2015-12-02T17:12:29Z
 golang.struktur.de/spreedbox/spreedbox-network	git	90898427a550cfabe35e982824298515671bea0d	2015-12-01T15:15:18Z
 gopkg.in/yaml.v2	git	49c95bdc21843256fb6c4e0d370a05f24a0bf213	2015-02-24T22:57:58Z
