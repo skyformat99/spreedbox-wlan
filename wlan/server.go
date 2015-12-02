@@ -1,7 +1,6 @@
 package wlan
 
 import (
-	"encoding/json"
 	"golang.struktur.de/spreedbox/spreedbox-conf/conf"
 	"golang.struktur.de/spreedbox/spreedbox-go/bus"
 	"golang.struktur.de/spreedbox/spreedbox-network/network"
@@ -14,11 +13,14 @@ import (
 )
 
 type Server struct {
-	ec *bus.EncodedConn
+	ec      *bus.EncodedConn
+	scanner *Scanner
 }
 
 func NewServer() (*Server, error) {
-	s := &Server{}
+	s := &Server{
+		scanner: NewScanner(),
+	}
 	return s, nil
 }
 
@@ -44,6 +46,10 @@ func (s *Server) Serve() (err error) {
 
 func (s *Server) interfaces(subject, reply string, msg *InterfacesRequest) {
 	log.Println("interfaces", subject, reply, msg.Names)
+	go s.interfacesHandler(subject, reply, msg)
+}
+
+func (s *Server) interfacesHandler(subject, reply string, msg *InterfacesRequest) {
 	wls := &WlanSettings{}
 
 	// devices
@@ -83,15 +89,11 @@ func (s *Server) interfaces(subject, reply string, msg *InterfacesRequest) {
 
 func (s *Server) scan(subject, reply string, msg *ScanRequest) {
 	log.Println("scan", subject, reply, msg.Name)
+	go s.scanHandler(subject, reply, msg)
+}
 
-	iwlist := linux.NewIWList()
-	wlanCells, err := iwlist.Scan(msg.Name)
-	if err != nil {
-		log.Println("failed to scan", err)
-	}
-
-	pretty, _ := json.MarshalIndent(wlanCells, "", "\t")
-	log.Println("scan result", string(pretty))
+func (s *Server) scanHandler(subject, reply string, msg *ScanRequest) {
+	wlanCells, err := s.scanner.Scan(msg.Name)
 
 	if reply != "" {
 		replyData, err := conf.NewDataReply(wlanCells, err)
