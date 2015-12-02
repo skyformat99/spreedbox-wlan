@@ -29,8 +29,8 @@ type IWListCell struct {
 
 type IWListCellInformationElement struct {
 	Protocol             string `json:"protocol"`
-	GroupCipher          string `json:"groupcipher,omitempty"`
-	PairwiseCiphers      string `json:"pairwiseciphers,omitempty"`
+	GroupCipher          string `json:"groupCipher,omitempty"`
+	PairwiseCiphers      string `json:"pairwiseCiphers,omitempty"`
 	AuthenticationSuites string `json:"authenticationSuites,omitempty"`
 }
 
