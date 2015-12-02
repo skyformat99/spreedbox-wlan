@@ -17,7 +17,7 @@ type WlanInterface struct {
 	Frequency string `json:"frequency"`
 	Channel   string `json:"channel"`
 	Protocol  string `json:"protocol"`
-	Essid     string `json:"essid"`
+	ESSID     string `json:"essid"`
 }
 
 type InterfacesRequest struct {
