@@ -22,7 +22,7 @@ type IWListCell struct {
 	Frequency           string                          `json:"frequency"`
 	EncryptionKeyStatus string                          `json:"encryptionKeyStatus"`
 	InformationElements []*IWListCellInformationElement `json:"informationElements"`
-	QualityLevel        float32                         `json:"qualityLevel"`
+	QualityLevel        int8                            `json:"qualityLevel"`
 	SignalLevel         string                          `json:"signalLevel"`
 	NoiseLevel          string                          `json:"noiseLevel"`
 }
@@ -105,7 +105,7 @@ func (c *IWList) parse(data string) []*IWListCell {
 					qualityLevel, _ := strconv.Atoi(qualityLevelCols[0])
 					if qualityLevelMax, err := strconv.Atoi(qualityLevelCols[1]); err == nil {
 						if qualityLevelMax > 0 {
-							cell.QualityLevel = float32(qualityLevel) / float32(qualityLevelMax)
+							cell.QualityLevel = int8(float32(qualityLevel) / float32(qualityLevelMax) * 100)
 						}
 					}
 				case "Signal level":
@@ -120,7 +120,7 @@ func (c *IWList) parse(data string) []*IWListCell {
 }
 
 func (c *IWList) Scan(interfaceName string) ([]*IWListCell, error) {
-	cmd := exec.Command("sudo", "iwlist", interfaceName, "scan")
+	cmd := exec.Command("iwlist", interfaceName, "scan")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println("iwlist failed", interfaceName, err, string(out))
