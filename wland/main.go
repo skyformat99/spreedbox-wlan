@@ -4,10 +4,14 @@ import (
 	"golang.struktur.de/spreedbox/spreedbox-go/common"
 	"golang.struktur.de/spreedbox/spreedbox-wlan/wlan"
 	"log"
+	"os"
 )
 
 func main() {
-	common.SetupLogging()
+	if err := common.SetupLogging(); err != nil {
+		log.Println("Could not setup logging:", err)
+		os.Exit(1)
+	}
 
 	server, err := wlan.NewServer()
 	if err != nil {
