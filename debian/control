@@ -7,7 +7,7 @@ Build-Depends: debhelper (>= 9),
                dh-golang,
                golang-go (>= 1.4.0),
                golang-spreedbox-conf-dev (>= 0.0.3),
-               golang-spreedbox-go-dev,
+               golang-spreedbox-go-dev (>= 0.0.4),
                golang-spreedbox-network-dev
 Standards-Version: 3.9.5
 
@@ -15,7 +15,7 @@ Package: golang-spreedbox-wlan-dev
 Architecture: all
 Depends: ${misc:Depends},
          golang-spreedbox-conf-dev (>= 0.0.3),
-         golang-spreedbox-go-dev,
+         golang-spreedbox-go-dev (>= 0.0.4),
          golang-spreedbox-network-dev
 Description: Spreedbox Wlan development Go package
  Spreedbox Wlan development Go package
