@@ -1,0 +1,40 @@
+# spreedbox-wland
+
+description "Spreedbox wland service"
+
+start on stopped rc
+stop on runlevel [!2345]
+
+env DAEMON=/usr/bin/wland
+
+respawn
+respawn limit 10 2
+
+umask 077
+
+script
+    . /etc/default/spreedbox-wland
+
+    # Create the run directory.
+    test -e $WLAND_SERVICE_RUN_DIR || mkdir -p $WLAND_SERVICE_RUN_DIR || true
+    chown -R $WLAND_SERVICE_USER:$WLAND_SERVICE_GROUP $WLAND_SERVICE_RUN_DIR || true
+    chmod 770 $WLAND_SERVICE_RUN_DIR || true
+
+    # Set some performance parameters
+    ulimit -n $WLAND_SERVICE_NOFILE
+    export GOMAXPROCS=$WLAND_SERVICE_GOMAXPROCS
+
+    exec start-stop-daemon --start \
+                           --make-pidfile \
+                           --pidfile $WLAND_SERVICE_PID \
+                           --startas $DAEMON \
+                           -- \
+                           -l $WLAND_SERVICE_LOG \
+                           $WLAND_SERVICE_ARGS
+end script
+
+post-stop script
+    . /etc/default/spreedbox-wland
+
+    rm -f $WLAND_SERVICE_PID
+end script

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -e
+
+# make sure we don't restart on update
+case "$1" in
+    remove)
+        if [ -e "/etc/init/spreedbox-wland.conf" ]; then
+            # stop fails if not running
+            stop spreedbox-wland || :
+        fi
+        ;;
+    *)
+        exit 0
+    ;;
+esac
+
+#DEBHELPER#

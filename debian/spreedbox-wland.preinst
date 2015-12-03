@@ -1,0 +1,40 @@
+#!/bin/sh
+
+set -e
+
+case "$1" in
+    install|upgrade)
+       WLAND_SERVICE_USER='spreedbox-wland'
+       WLAND_SERVICE_GROUP='spreedbox-service'
+       WLAND_SERVICE_HOME='/var/lib/spreedbox/wland'
+       WLAND_SERVICE_LOG_DIR='/var/log/spreedbox/wland'
+
+       # Create the service user
+       if ! getent passwd | grep -q "^$WLAND_SERVICE_USER:"; then
+         echo -n "Adding system user $WLAND_SERVICE_USER.."
+         adduser --quiet \
+                 --system \
+                 --ingroup $WLAND_SERVICE_GROUP \
+                 --home $WLAND_SERVICE_HOME \
+                 --no-create-home \
+                 --disabled-login \
+                 $WLAND_SERVICE_USER 2>/dev/null || true
+         echo "..done"
+       fi
+
+       # Create the log directory.
+       test -e $WLAND_SERVICE_LOG_DIR || mkdir -p $WLAND_SERVICE_LOG_DIR
+       chown -R $WLAND_SERVICE_USER:$WLAND_SERVICE_GROUP $WLAND_SERVICE_LOG_DIR
+       chmod 700 $WLAND_SERVICE_LOG_DIR
+
+       # Create the home directory.
+       test -e $WLAND_SERVICE_HOME || mkdir -p $WLAND_SERVICE_HOME
+       chown -R $WLAND_SERVICE_USER:$WLAND_SERVICE_GROUP $WLAND_SERVICE_HOME
+       chmod 700 $WLAND_SERVICE_HOME
+       ;;
+    *)
+        exit 0
+    ;;
+esac
+
+#DEBHELPER#

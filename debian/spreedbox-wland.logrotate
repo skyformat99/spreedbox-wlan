@@ -1,0 +1,9 @@
+/var/log/spreedbox/wland/server.log {
+       daily
+       rotate 52
+       copytruncate
+       delaycompress
+       compress
+       notifempty
+       missingok
+}

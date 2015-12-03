@@ -1,0 +1,22 @@
+#! /bin/sh -e
+
+case "$1" in
+    purge)
+        # Purge logs
+        rm -rf /var/log/spreedbox/wland 2>/dev/null || true
+        rmdir --ignore-fail-on-non-empty /var/log/spreedbox 2>/dev/null || true
+
+        # Purge run directory
+        rm -rf /var/run/spreedbox/wland 2>/dev/null || true
+        rmdir --ignore-fail-on-non-empty /var/run/spreedbox 2>/dev/null || true
+        ;;
+    remove)
+        ;;
+    upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+        ;;
+    *)
+        echo "postrm called with unknown argument \`$1'" >&2
+        exit 1
+esac
+
+#DEBHELPER#
