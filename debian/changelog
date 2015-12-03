@@ -1,3 +1,18 @@
+spreedbox-wlan (0.0.2) trusty; urgency=low
+
+  [ Simon Eisenmann ]
+  * Added service discovery.
+  * Updated dependencies.
+
+  [ Joachim Bauch ]
+  * Process all folders.
+
+  [ Simon Eisenmann ]
+  * Updated dependencies.
+  * Better name for constant.
+
+ -- Joachim Bauch <bauch@struktur.de>  Thu, 03 Dec 2015 11:47:02 +0100
+
 spreedbox-wlan (0.0.1) trusty; urgency=medium
 
   * Initial release.
