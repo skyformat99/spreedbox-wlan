@@ -22,7 +22,10 @@ Description: Spreedbox Wlan development Go package
 
 Package: spreedbox-wland
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+ spreedbox-service
 Description: Spreedbox Wlan daemon
  Spreedbox Wlan daemon
 
