@@ -28,7 +28,8 @@ Depends:
  busybox,
  hostapd (>= 2.4),
  spreedbox-service,
- wireless-tools
+ wireless-tools,
+ wpasupplicant
 Description: Spreedbox Wlan daemon
  Spreedbox Wlan daemon
 
