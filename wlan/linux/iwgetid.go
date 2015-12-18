@@ -43,7 +43,11 @@ func (c *IWGetID) Ap(interfaceName string) string {
 }
 
 func (c *IWGetID) Freq(interfaceName string) string {
-	return c.command(interfaceName, "--freq")
+	result := c.command(interfaceName, "--freq")
+	if strings.HasSuffix(result, "e+09") {
+		result = result[:len(result)-4] + " GHz"
+	}
+	return result
 }
 
 func (c *IWGetID) Channel(interfaceName string) string {
