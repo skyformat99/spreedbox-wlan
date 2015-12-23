@@ -8,6 +8,10 @@ import (
 	"strings"
 )
 
+var (
+	iwgetidCmd = "/sbin/iwgetid"
+)
+
 type LinuxWlanInterfaceGetter struct {
 }
 
@@ -23,7 +27,7 @@ func (c *LinuxWlanInterfaceGetter) exec(interfaceName string, arg ...string) ([]
 			arguments = append(arguments, arg...)
 		}
 	}
-	cmd := exec.Command("iwgetid", arguments...)
+	cmd := exec.Command(iwgetidCmd, arguments...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println("iwgetid failed", interfaceName, arg, err, string(out))

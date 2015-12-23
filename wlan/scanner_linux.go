@@ -9,6 +9,10 @@ import (
 	"strings"
 )
 
+var (
+	iwlistCmd = "/sbin/iwlist"
+)
+
 type LinuxWlanInterfaceScanner struct {
 }
 
@@ -102,7 +106,7 @@ func (c *LinuxWlanInterfaceScanner) parse(data string) []*WlanInterfaceCell {
 }
 
 func (c *LinuxWlanInterfaceScanner) ScanInterface(name string) ([]*WlanInterfaceCell, error) {
-	cmd := exec.Command("iwlist", name, "scan")
+	cmd := exec.Command(iwlistCmd, name, "scan")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println("iwlist failed", name, err, string(out))
