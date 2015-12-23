@@ -1,3 +1,12 @@
+spreedbox-wlan (0.0.8) trusty; urgency=low
+
+  * Added targets "format" and "binary".
+  * Hide OS-dependent implementations from application.
+  * Moved command names to variables.
+  * Return result of previous scan by default and optionally support forcing a rescan.
+
+ -- Joachim Bauch <bauch@struktur.de>  Wed, 23 Dec 2015 11:30:34 +0100
+
 spreedbox-wlan (0.0.7) trusty; urgency=low
 
   * Fixed formatting of frequency.
