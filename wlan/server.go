@@ -4,7 +4,6 @@ import (
 	"golang.struktur.de/spreedbox/spreedbox-conf/conf"
 	"golang.struktur.de/spreedbox/spreedbox-go/bus"
 	"golang.struktur.de/spreedbox/spreedbox-network/network"
-	"golang.struktur.de/spreedbox/spreedbox-wlan/wlan/linux"
 	"log"
 	"net"
 	"os"
@@ -61,18 +60,16 @@ func (s *Server) interfacesHandler(subject, reply string, msg *InterfacesRequest
 	if interfaces, err := net.Interfaces(); err == nil {
 		interfacesResult := make(map[string]*WlanInterface)
 
-		iwgetid := linux.NewIWGetID()
+		interfaceGetter := NewWlanInterfaceGetter()
 
 		for _, i := range interfaces {
 			if !network.IsInterfaceEthernet(i.Name) || !network.IsInterfaceWifi(i.Name) {
 				continue
 			}
-			wi := &WlanInterface{
-				ApAddress: iwgetid.Ap(i.Name),
-				Frequency: iwgetid.Freq(i.Name),
-				Channel:   iwgetid.Channel(i.Name),
-				Protocol:  iwgetid.Protocol(i.Name),
-				ESSID:     iwgetid.ESSID(i.Name),
+			wi, err := interfaceGetter.GetInterface(i.Name)
+			if err != nil {
+				log.Println("failed to get interface", i.Name, err)
+				continue
 			}
 			interfacesResult[i.Name] = wi
 		}

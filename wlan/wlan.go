@@ -2,7 +2,6 @@ package wlan
 
 import (
 	"fmt"
-	"golang.struktur.de/spreedbox/spreedbox-wlan/wlan/linux"
 )
 
 const (
@@ -26,12 +25,12 @@ type InterfacesRequest struct {
 }
 
 type WlanCell struct {
-	linux.IWListCell
+	WlanInterfaceCell
 	InformationElements []*WlanCellInformationElement `json:"informationElements"`
 }
 
 type WlanCellInformationElement struct {
-	linux.IWListCellInformationElement
+	WlanInterfaceCellInformationElement
 }
 
 type ScanRequest struct {

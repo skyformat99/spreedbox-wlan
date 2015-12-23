@@ -1,4 +1,6 @@
-package linux
+// +build linux
+
+package wlan
 
 import (
 	"log"
@@ -7,37 +9,17 @@ import (
 	"strings"
 )
 
-type IWList struct {
+type LinuxWlanInterfaceScanner struct {
 }
 
-func NewIWList() *IWList {
-	return &IWList{}
+func NewWlanInterfaceScanner() *LinuxWlanInterfaceScanner {
+	return &LinuxWlanInterfaceScanner{}
 }
 
-type IWListCell struct {
-	Address             string                          `json:"address"`
-	ESSID               string                          `json:"essid"`
-	Mode                string                          `json:"mode"`
-	Channel             string                          `json:"channel"`
-	Frequency           string                          `json:"frequency"`
-	EncryptionKeyStatus string                          `json:"encryptionKeyStatus"`
-	InformationElements []*IWListCellInformationElement `json:"informationElements"`
-	QualityLevel        int8                            `json:"qualityLevel"`
-	SignalLevel         string                          `json:"signalLevel"`
-	NoiseLevel          string                          `json:"noiseLevel"`
-}
-
-type IWListCellInformationElement struct {
-	Protocol             string `json:"protocol"`
-	GroupCipher          string `json:"groupCipher,omitempty"`
-	PairwiseCiphers      string `json:"pairwiseCiphers,omitempty"`
-	AuthenticationSuites string `json:"authenticationSuites,omitempty"`
-}
-
-func (c *IWList) parse(data string) []*IWListCell {
-	cells := []*IWListCell{}
-	var cell *IWListCell
-	var ie *IWListCellInformationElement
+func (c *LinuxWlanInterfaceScanner) parse(data string) []*WlanInterfaceCell {
+	cells := []*WlanInterfaceCell{}
+	var cell *WlanInterfaceCell
+	var ie *WlanInterfaceCellInformationElement
 
 	for _, line := range strings.Split(data, "\n") {
 		line = strings.TrimSpace(line)
@@ -56,8 +38,8 @@ func (c *IWList) parse(data string) []*IWListCell {
 		switch {
 		case strings.HasPrefix(firstCol, "Cell"):
 			// Cell 05 - Address: XX:XX:XX:XX:XX:XX lines trigger a new cell
-			cell = &IWListCell{
-				InformationElements: []*IWListCellInformationElement{},
+			cell = &WlanInterfaceCell{
+				InformationElements: []*WlanInterfaceCellInformationElement{},
 			}
 			cells = append(cells, cell)
 			cell.Address = secondCol
@@ -72,7 +54,7 @@ func (c *IWList) parse(data string) []*IWListCell {
 		case firstCol == "Encryption key":
 			cell.EncryptionKeyStatus = secondCol
 		case firstCol == "IE":
-			ie = &IWListCellInformationElement{}
+			ie = &WlanInterfaceCellInformationElement{}
 			cell.InformationElements = append(cell.InformationElements, ie)
 			ie.Protocol = secondCol
 		case strings.HasPrefix(firstCol, "Group Cipher"):
@@ -119,11 +101,11 @@ func (c *IWList) parse(data string) []*IWListCell {
 	return cells
 }
 
-func (c *IWList) Scan(interfaceName string) ([]*IWListCell, error) {
-	cmd := exec.Command("iwlist", interfaceName, "scan")
+func (c *LinuxWlanInterfaceScanner) ScanInterface(name string) ([]*WlanInterfaceCell, error) {
+	cmd := exec.Command("iwlist", name, "scan")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Println("iwlist failed", interfaceName, err, string(out))
+		log.Println("iwlist failed", name, err, string(out))
 		return nil, err
 	}
 	cells := c.parse(string(out))

@@ -3,7 +3,6 @@ package wlan
 import (
 	"errors"
 	"golang.struktur.de/spreedbox/spreedbox-network/network"
-	"golang.struktur.de/spreedbox/spreedbox-wlan/wlan/linux"
 	"log"
 	"sync"
 	"sync/atomic"
@@ -14,16 +13,16 @@ type interfaceScanner struct {
 	refCount int32
 
 	interfaceName string
-	cells         []*linux.IWListCell
+	cells         []*WlanInterfaceCell
 	scanError     error
 
 	sync.Once
 }
 
-func (s *interfaceScanner) scan() ([]*linux.IWListCell, error) {
+func (s *interfaceScanner) scan() ([]*WlanInterfaceCell, error) {
 	s.Do(func() {
-		iwlist := linux.NewIWList()
-		cells, err := iwlist.Scan(s.interfaceName)
+		scanner := NewWlanInterfaceScanner()
+		cells, err := scanner.ScanInterface(s.interfaceName)
 		if err != nil {
 			log.Println("failed to scan", err)
 		}
@@ -45,7 +44,7 @@ func NewScanner() *Scanner {
 	}
 }
 
-func (s *Scanner) Scan(interfaceName string) (cells []*linux.IWListCell, err error) {
+func (s *Scanner) Scan(interfaceName string) (cells []*WlanInterfaceCell, err error) {
 	if !network.IsInterfaceWifi(interfaceName) {
 		// NOTE: spreedbox-setup check for exactly this message to generate
 		// a proper error response.
