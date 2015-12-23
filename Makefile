@@ -7,7 +7,7 @@ SYSTEM_GOPATH = /usr/share/gocode/src/
 DIST := $(PWD)/dist
 DIST_SRC := $(DIST)/src
 
-FOLDERS = $(shell find -mindepth 1 -maxdepth 1 -type d -not -path "*.git" -not -path "*debian" -not -path "*vendor" -not -path "*doc")
+FOLDERS = $(shell find -mindepth 1 -maxdepth 1 -type d -not -path "*.git" -not -path "*debian" -not -path "*vendor" -not -path "*doc" -not -path "*bin")
 
 all:
 
@@ -32,5 +32,11 @@ build: goget
 
 test: goget
 	GOPATH=$(GOPATH) go test $(FOLDERS)
+
+format:
+	find $(FOLDERS) -name *.go -print0 | xargs -0 -n 1 go fmt
+
+binary: goget
+	GOPATH=$(GOPATH) go build -o bin/wland wland/*.go
 
 .PHONY: all dist_gopath goget build
