@@ -28,7 +28,7 @@ type WlanInterfaceGetter interface {
 // will be provided by OS-dependent implementations
 
 type WlanInterfaceScanner interface {
-	ScanInterface(name string) ([]*WlanInterfaceCell, error)
+	ScanInterface(name string, rescan bool) ([]*WlanInterfaceCell, error)
 }
 
 // func NewWlanInterfaceScanner() WlanInterfaceScanner

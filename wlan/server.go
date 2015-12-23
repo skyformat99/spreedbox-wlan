@@ -95,7 +95,7 @@ func (s *Server) scan(subject, reply string, msg *ScanRequest) {
 }
 
 func (s *Server) scanHandler(subject, reply string, msg *ScanRequest) {
-	wlanCells, err := s.scanner.Scan(msg.Name)
+	wlanCells, err := s.scanner.Scan(msg.Name, msg.Rescan)
 
 	if reply != "" {
 		replyData, err := conf.NewDataReply(wlanCells, err)

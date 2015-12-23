@@ -34,7 +34,8 @@ type WlanCellInformationElement struct {
 }
 
 type ScanRequest struct {
-	Name string `json:"name"`
+	Name   string `json:"name"`
+	Rescan bool   `json:"rescan",omitempty`
 }
 
 func WlanSubjectInterfaces() string {

@@ -105,8 +105,12 @@ func (c *LinuxWlanInterfaceScanner) parse(data string) []*WlanInterfaceCell {
 	return cells
 }
 
-func (c *LinuxWlanInterfaceScanner) ScanInterface(name string) ([]*WlanInterfaceCell, error) {
-	cmd := exec.Command(iwlistCmd, name, "scan")
+func (c *LinuxWlanInterfaceScanner) ScanInterface(name string, rescan bool) ([]*WlanInterfaceCell, error) {
+	args := []string{name, "scan"}
+	if !rescan {
+		args = append(args, "last")
+	}
+	cmd := exec.Command(iwlistCmd, args...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println("iwlist failed", name, err, string(out))

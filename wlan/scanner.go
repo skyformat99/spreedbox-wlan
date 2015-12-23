@@ -13,6 +13,7 @@ type interfaceScanner struct {
 	refCount int32
 
 	interfaceName string
+	rescan        bool
 	cells         []*WlanInterfaceCell
 	scanError     error
 
@@ -22,7 +23,7 @@ type interfaceScanner struct {
 func (s *interfaceScanner) scan() ([]*WlanInterfaceCell, error) {
 	s.Do(func() {
 		scanner := NewWlanInterfaceScanner()
-		cells, err := scanner.ScanInterface(s.interfaceName)
+		cells, err := scanner.ScanInterface(s.interfaceName, s.rescan)
 		if err != nil {
 			log.Println("failed to scan", err)
 		}
@@ -44,7 +45,7 @@ func NewScanner() *Scanner {
 	}
 }
 
-func (s *Scanner) Scan(interfaceName string) (cells []*WlanInterfaceCell, err error) {
+func (s *Scanner) Scan(interfaceName string, rescan bool) (cells []*WlanInterfaceCell, err error) {
 	if !network.IsInterfaceWifi(interfaceName) {
 		// NOTE: spreedbox-setup check for exactly this message to generate
 		// a proper error response.
@@ -53,7 +54,8 @@ func (s *Scanner) Scan(interfaceName string) (cells []*WlanInterfaceCell, err er
 
 	s.Lock()
 	scanner, found := s.scanners[interfaceName]
-	if !found {
+	if !found || (rescan && !scanner.rescan) {
+		// First scan or a rescan request with the currently active scan is returning a cached list.
 		scanner = &interfaceScanner{
 			interfaceName: interfaceName,
 		}
