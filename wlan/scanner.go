@@ -37,11 +37,13 @@ func (s *interfaceScanner) scan() ([]*WlanInterfaceCell, error) {
 type Scanner struct {
 	sync.Mutex
 	scanners map[string]*interfaceScanner
+	first    bool
 }
 
 func NewScanner() *Scanner {
 	return &Scanner{
 		scanners: make(map[string]*interfaceScanner),
+		first:    true,
 	}
 }
 
@@ -55,12 +57,17 @@ func (s *Scanner) Scan(interfaceName string, rescan bool) (cells []*WlanInterfac
 	s.Lock()
 	scanner, found := s.scanners[interfaceName]
 	if !found || (rescan && !scanner.rescan) {
-		// First scan or a rescan request with the currently active scan is returning a cached list.
+		// First scan or a rescan request with the currently active scan is returning a cached list
 		scanner = &interfaceScanner{
 			interfaceName: interfaceName,
 			rescan:        rescan,
 		}
 		s.scanners[interfaceName] = scanner
+		if s.first {
+			// Make sure to force rescan at least once
+			scanner.rescan = true
+			s.first = false
+		}
 	}
 	s.Unlock()
 

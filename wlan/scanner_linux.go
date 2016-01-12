@@ -110,12 +110,14 @@ func (c *LinuxWlanInterfaceScanner) ScanInterface(name string, rescan bool) ([]*
 	if !rescan {
 		args = append(args, "last")
 	}
+	log.Println("scanning", name, rescan)
 	cmd := exec.Command(iwlistCmd, args...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println("iwlist failed", name, err, string(out))
 		return nil, err
 	}
+	log.Println("scanning complete", name)
 	cells := c.parse(string(out))
 	return cells, err
 }
