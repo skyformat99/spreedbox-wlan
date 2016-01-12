@@ -1,3 +1,12 @@
+spreedbox-wlan (0.1.0) trusty; urgency=medium
+
+  * Pass through rescan flag to new scanners.
+  * Make sure to scan at least once.
+  * Make sure to up wlan interface before scanning.
+  * Prepare for wpa roaming configuration.
+
+ -- Simon Eisenmann <simon@struktur.de>  Tue, 12 Jan 2016 11:55:46 +0100
+
 spreedbox-wlan (0.0.8) trusty; urgency=low
 
   * Added targets "format" and "binary".
