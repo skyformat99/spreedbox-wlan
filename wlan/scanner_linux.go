@@ -10,7 +10,8 @@ import (
 )
 
 var (
-	iwlistCmd = "/sbin/iwlist"
+	iwlistCmd   = "/sbin/iwlist"
+	ifconfigCmd = "/sbin/ifconfig"
 )
 
 type LinuxWlanInterfaceScanner struct {
@@ -105,7 +106,19 @@ func (c *LinuxWlanInterfaceScanner) parse(data string) []*WlanInterfaceCell {
 	return cells
 }
 
+func (c *LinuxWlanInterfaceScanner) upInterface(name string) error {
+	args := []string{name, "up"}
+	cmd := exec.Command(ifconfigCmd, args...)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Println("ifconfig failed", name, err, string(out))
+	}
+	return err
+}
+
 func (c *LinuxWlanInterfaceScanner) ScanInterface(name string, rescan bool) ([]*WlanInterfaceCell, error) {
+	c.upInterface(name) // Linux wifi interfaces need to be up to get scan results.
+
 	args := []string{name, "scan"}
 	if !rescan {
 		args = append(args, "last")
