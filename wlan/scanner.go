@@ -58,6 +58,7 @@ func (s *Scanner) Scan(interfaceName string, rescan bool) (cells []*WlanInterfac
 		// First scan or a rescan request with the currently active scan is returning a cached list.
 		scanner = &interfaceScanner{
 			interfaceName: interfaceName,
+			rescan:        rescan,
 		}
 		s.scanners[interfaceName] = scanner
 	}
