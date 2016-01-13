@@ -1,0 +1,6 @@
+# bus usage of spreedbox-wlan
+
+subscribe WlanSubjectInterfaces()
+subscribe WlanSubjectScan()
+
+register service wlan
