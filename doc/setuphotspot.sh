@@ -4,12 +4,15 @@ set -e
 
 DEVICE=wlan0
 SSID=spreedbox
+HOSTNAME=spreedbox.local
 NETWORK_PREFIX=192.168.43
 
+XUDNSD=$(which xudnsd)
 HOSTAPD=$(which hostapd)
 UDHCPD=$(which udhcpd)
 
 TMPDIR=$(mktemp -d)
+XUDNSD_PID=
 UDHCPD_PID=
 
 cleanup () {
@@ -19,6 +22,7 @@ cleanup () {
 		kill -TERM $(cat hostapd.pid) 2>/dev/null || true
 	fi
 	kill -TERM ${UDHCPD_PID} 2>/dev/null || true
+	kill -TERM ${XUDNSD_PID} 2>/dev/null || true
 	rm -rf ${TMPDIR}
 	echo "Shutting down device ${DEVICE} ..."
 	ifconfig ${DEVICE} down
@@ -29,6 +33,12 @@ trap "cleanup" INT QUIT TERM EXIT
 startdevice () {
 	echo "Starting device ${DEVICE} ..."
 	ifconfig ${DEVICE} ${NETWORK_PREFIX}.1/24 up
+}
+
+xudnsd () {
+	echo "Starting xudnsd ..."
+	${XUDNSD} -ip=${NETWORK_PREFIX}.1 -name=${HOSTNAME}. &
+	XUDNSD_PID=$!
 }
 
 hostapd () {
@@ -67,6 +77,7 @@ EOL
 cd ${TMPDIR}
 
 startdevice
+xudnsd
 hostapd
 udhcpd
 
