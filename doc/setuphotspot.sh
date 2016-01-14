@@ -24,11 +24,16 @@ cleanup () {
 	kill -TERM ${UDHCPD_PID} 2>/dev/null || true
 	kill -TERM ${XUDNSD_PID} 2>/dev/null || true
 	rm -rf ${TMPDIR}
-	echo "Shutting down device ${DEVICE} ..."
-	ifconfig ${DEVICE} down
+	flushdevice
 	echo "Done."
 }
 trap "cleanup" INT QUIT TERM EXIT
+
+flushdevice () {
+	echo "Flushing device ${DEVICE} ..."
+	ifconfig ${DEVICE} down
+	ip addr flush dev ${DEVICE}
+}
 
 startdevice () {
 	echo "Starting device ${DEVICE} ..."
@@ -76,6 +81,7 @@ EOL
 
 cd ${TMPDIR}
 
+flushdevice
 startdevice
 xudnsd
 hostapd

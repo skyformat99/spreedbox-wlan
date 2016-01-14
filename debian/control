@@ -29,7 +29,8 @@ Depends:
  hostapd (>= 2.4),
  spreedbox-service,
  wireless-tools,
- wpasupplicant
+ wpasupplicant,
+ xudnsd
 Description: Spreedbox Wlan daemon
  Spreedbox Wlan daemon
 
