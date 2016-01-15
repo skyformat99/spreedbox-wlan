@@ -2,10 +2,15 @@
 
 set -e
 
-DEVICE=wlan0
-SSID=spreedbox
-HOSTNAME=spreedbox.local
-NETWORK_PREFIX=192.168.43
+DEVICE="$1"
+SSID="spreedbox"
+HOSTNAME="spreedbox.local"
+NETWORK_PREFIX="192.168.43"
+
+if [ "$#" -ne 1 ]; then
+	echo "No device given"
+	exit 1
+fi
 
 XUDNSD=$(which xudnsd)
 HOSTAPD=$(which hostapd)
