@@ -21,27 +21,36 @@ XUDNSD_PID=
 UDHCPD_PID=
 
 cleanup () {
-	trap "" EXIT
+	trap "" INT QUIT TERM EXIT
 	echo "Stopping ..."
 	if [ -e hostapd.pid ]; then
 		kill -TERM $(cat hostapd.pid) 2>/dev/null || true
 	fi
 	kill -TERM ${UDHCPD_PID} 2>/dev/null || true
 	kill -TERM ${XUDNSD_PID} 2>/dev/null || true
-	rm -rf ${TMPDIR}
 	flushdevice
+	restartdevice
+	rm -rf ${TMPDIR}
 	echo "Done."
 }
 trap "cleanup" INT QUIT TERM EXIT
 
 flushdevice () {
 	echo "Flushing device ${DEVICE} ..."
-	ifconfig ${DEVICE} down
+	ifconfig ${DEVICE} down || true
 	ip addr flush dev ${DEVICE}
+}
+
+restartdevice() {
+	echo "Restarting device ${DEVICE} ..."
+	sleep 2
+	ifup ${DEVICE} || true
 }
 
 startdevice () {
 	echo "Starting device ${DEVICE} ..."
+	ifdown --force ${DEVICE} || true
+	sleep 2
 	ifconfig ${DEVICE} ${NETWORK_PREFIX}.1/24 up
 }
 
