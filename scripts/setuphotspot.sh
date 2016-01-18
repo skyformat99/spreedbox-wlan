@@ -80,6 +80,7 @@ wpa_key_mgmt=WPA-PSK
 rsn_pairwise=CCMP
 wpa_passphrase=${PASSPHRASE}
 EOL
+	fi
 	echo "Starting hostapd ..."
 	${HOSTAPD} -B -P hostapd.pid hostapd.conf
 }
