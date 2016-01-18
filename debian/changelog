@@ -1,3 +1,15 @@
+spreedbox-wlan (0.2.0) trusty; urgency=medium
+
+  * Added bus docs.
+  * Prepare hotspot.
+  * Added xudnsd to provide DNS service for hotspot.
+  * Added DNS using xudnsd and make sure to flush device after use.
+  * Added hotspot support.
+  * Properly ifup and ifdown device.
+  * Install hotspot helper.
+
+ -- Simon Eisenmann <simon@struktur.de>  Mon, 18 Jan 2016 14:42:33 +0100
+
 spreedbox-wlan (0.1.0) trusty; urgency=medium
 
   * Pass through rescan flag to new scanners.
