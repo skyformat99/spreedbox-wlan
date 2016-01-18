@@ -24,6 +24,11 @@ script
     ulimit -n $WLAND_SERVICE_NOFILE
     export GOMAXPROCS=$WLAND_SERVICE_GOMAXPROCS
 
+    # Export hotspot parameters
+    export HOTSPOT_INTERFACE
+    export HOTSPOT_COMMAND
+    export HOTSPOT_GRACEPERIOD
+
     exec start-stop-daemon --start \
                            --make-pidfile \
                            --pidfile $WLAND_SERVICE_PID \
