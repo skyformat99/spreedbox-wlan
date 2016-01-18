@@ -39,4 +39,11 @@ format:
 binary: goget
 	GOPATH=$(GOPATH) go build -o bin/wland wland/*.go
 
-.PHONY: all dist_gopath goget build
+dependencies.tsv:
+	set -e ;\
+	TMP=$$(mktemp -d) ;\
+	cp -r $(CURDIR)/vendor $$TMP ;\
+	GOPATH=$$TMP/vendor:$(CURDIR) $(CURDIR)/vendor/bin/godeps $(GOPKG)/wlan > $(CURDIR)/dependencies.tsv ;\
+	rm -rf $$TMP ;\
+
+.PHONY: all dist_gopath goget build dependencies.tsv
