@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 )
 
@@ -37,19 +38,27 @@ func (h *Hotspot) SetLink(link bool, deviceNames []string) {
 		h.started = true
 		h.link = link
 		log.Println("link status changed", link)
-
-		if link && h.running {
-			if len(deviceNames) == 1 && deviceNames[0] == h.deviceName {
-				// It is our device, do nothing.
-				log.Println("hotspot is running with link on own device", h.deviceName)
-				return
-			}
-			h.stop()
-		}
-		if !link && !h.running {
-			h.start()
-		}
 	}
+
+	if link && h.running {
+		if len(deviceNames) == 1 && deviceNames[0] == h.deviceName {
+			// It is our device, do nothing.
+			log.Println("hotspot is running with link on own device", h.deviceName)
+			return
+		}
+		log.Println("stopping hotspot as there is a link on other device", deviceNames)
+		h.stop()
+	}
+	if !link && !h.running {
+		h.start()
+	}
+}
+
+func (h *Hotspot) Exit() {
+	h.Lock()
+	defer h.Unlock()
+	h.started = false
+	h.stop()
 }
 
 func (h *Hotspot) stop() {
@@ -61,8 +70,10 @@ func (h *Hotspot) stop() {
 	}
 	if h.cmd != nil {
 		if h.cmd.Process != nil {
-			h.cmd.Process.Kill()
+			h.cmd.Process.Signal(syscall.SIGTERM)
 		}
+		log.Println("waiting for hotspot to exit ...")
+		h.cmd.Wait()
 		h.cmd = nil
 	}
 }
@@ -90,7 +101,7 @@ func (h *Hotspot) run() {
 		return
 	}
 
-	log.Println("starting hotspot")
+	log.Println("starting hotspot ...")
 	command := strings.Split(h.runCmd, " ")
 	command = append(command, h.deviceName)
 	cmd := exec.Command(command[0], command[1:]...)
@@ -99,7 +110,7 @@ func (h *Hotspot) run() {
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		log.Println("failed to run hotspot", err)
+		log.Println("failed to run hotspot command", err)
 		return
 	}
 	wait := make(chan bool, 1)
@@ -116,11 +127,11 @@ func (h *Hotspot) run() {
 	}
 
 	<-wait
-	err = cmd.Wait()
-	log.Println("hotspot done", err)
 
 	h.Lock()
 	if h.running && h.cmd == cmd {
+		err = cmd.Wait()
+		log.Println("hotspot unexpected exit", err)
 		h.Unlock()
 		// Restart when still marked running.
 		h.run()

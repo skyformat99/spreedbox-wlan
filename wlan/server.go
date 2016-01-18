@@ -73,6 +73,7 @@ func (s *Server) Serve() (err error) {
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	log.Println(<-ch)
 
+	s.hotspot.Exit()
 	return
 }
 
