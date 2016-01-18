@@ -32,6 +32,7 @@ cleanup () {
 	restartdevice
 	rm -rf ${TMPDIR}
 	echo "Done."
+	exit
 }
 trap "cleanup" INT QUIT TERM EXIT
 
