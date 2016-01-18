@@ -82,7 +82,7 @@ func (h *Hotspot) start() {
 	if h.deviceName == "" || h.runCmd == "" {
 		return
 	}
-	log.Println("hotspot start")
+	log.Println("hotspot start scheduled in", h.gracePeriod)
 	h.running = true
 	h.timer = time.AfterFunc(h.gracePeriod, h.run)
 }
