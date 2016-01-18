@@ -3,11 +3,12 @@
 set -e
 
 DEVICE="$1"
+PASSPHRASE="$2"
 SSID="spreedbox"
 HOSTNAME="spreedbox.local"
 NETWORK_PREFIX="192.168.43"
 
-if [ "$#" -ne 1 ]; then
+if [ -z "${DEVICE}" ]; then
 	echo "No device given"
 	exit 1
 fi
@@ -71,6 +72,13 @@ channel=11
 auth_algs=3
 wmm_enabled=1
 ap_isolate=1
+EOL
+	if [ -n "${PASSPHRASE}" ]; then
+		cat >>hostapd.conf <<EOL
+wpa=2
+wpa_key_mgmt=WPA-PSK
+rsn_pairwise=CCMP
+wpa_passphrase=${PASSPHRASE}
 EOL
 	echo "Starting hostapd ..."
 	${HOSTAPD} -B -P hostapd.pid hostapd.conf

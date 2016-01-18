@@ -2,7 +2,7 @@
 
 DEVICE="$1"
 
-if [ "$#" -ne 1 ]; then
+if [ -z "$DEVICE" ]; then
 	echo "Dummy no device given"
 	exit 1
 fi

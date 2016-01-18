@@ -38,6 +38,7 @@ func NewServer() (*Server, error) {
 		hotspot: NewHotspot(
 			DefaultHotspotCommand,
 			DefaultHotspotInterface,
+			"",
 			DefaultHotspotGracePeriod,
 		),
 	}

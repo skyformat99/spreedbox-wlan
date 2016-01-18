@@ -15,6 +15,7 @@ type Hotspot struct {
 	sync.RWMutex
 	runCmd      string
 	deviceName  string
+	passPhrase  string
 	gracePeriod time.Duration
 	link        bool
 	started     bool
@@ -23,10 +24,11 @@ type Hotspot struct {
 	cmd         *exec.Cmd
 }
 
-func NewHotspot(runCmd, deviceName string, gracePeriod time.Duration) *Hotspot {
+func NewHotspot(runCmd, deviceName, passPhrase string, gracePeriod time.Duration) *Hotspot {
 	return &Hotspot{
 		runCmd:      runCmd,
 		deviceName:  deviceName,
+		passPhrase:  passPhrase,
 		gracePeriod: gracePeriod,
 	}
 }
@@ -103,7 +105,7 @@ func (h *Hotspot) run() {
 
 	log.Println("starting hotspot ...")
 	command := strings.Split(h.runCmd, " ")
-	command = append(command, h.deviceName)
+	command = append(command, h.deviceName, h.passPhrase)
 	cmd := exec.Command(command[0], command[1:]...)
 	h.cmd = cmd
 	h.Unlock()
