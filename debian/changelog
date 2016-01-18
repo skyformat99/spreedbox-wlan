@@ -1,3 +1,24 @@
+spreedbox-wlan (0.2.1) trusty; urgency=medium
+
+  [ Joachim Bauch ]
+  * Don't process "scripts" folder.
+
+  [ Simon Eisenmann ]
+  * Fixed dependencies.
+
+  [ Joachim Bauch ]
+  * Added "dependencies.tsv" target.
+  * Update to spreedbox-conf 0.0.9 to get "UpdateFile" API.
+  * "gopkg.in/yaml.v2" is not required.
+
+  [ Simon Eisenmann ]
+  * Properly trigger exit in trap.
+  * Properly stop hotspot on service exit.
+  * Log grace period on hotspot start.
+  * Added premiliary support for WPA2 hotspot.
+
+ -- Simon Eisenmann <simon@struktur.de>  Mon, 18 Jan 2016 17:34:25 +0100
+
 spreedbox-wlan (0.2.0) trusty; urgency=medium
 
   * Added bus docs.
