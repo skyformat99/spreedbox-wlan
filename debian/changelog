@@ -1,3 +1,9 @@
+spreedbox-wlan (0.3.1) trusty; urgency=medium
+
+  * Removed test code.
+
+ -- Simon Eisenmann <simon@struktur.de>  Thu, 21 Jan 2016 17:15:46 +0100
+
 spreedbox-wlan (0.3.0) trusty; urgency=medium
 
   [ Joachim Bauch ]
