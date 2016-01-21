@@ -1,3 +1,13 @@
+spreedbox-wlan (0.3.0) trusty; urgency=medium
+
+  [ Joachim Bauch ]
+  * Added Gitlab CI integration.
+
+  [ Simon Eisenmann ]
+  * Hotspot is now using WPA2 encryption by default.
+
+ -- Simon Eisenmann <simon@struktur.de>  Thu, 21 Jan 2016 17:12:08 +0100
+
 spreedbox-wlan (0.2.2) trusty; urgency=medium
 
   * Fixed syntax error.
