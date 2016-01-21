@@ -2,8 +2,11 @@ package wlan
 
 import (
 	"bufio"
+	"fmt"
 	"golang.struktur.de/spreedbox/spreedbox-network/network"
+	"io/ioutil"
 	"log"
+	"os"
 	"os/exec"
 	"strings"
 	"sync"
@@ -20,6 +23,7 @@ type Hotspot struct {
 	link        bool
 	started     bool
 	running     bool
+	quit        chan (bool)
 	timer       *time.Timer
 	cmd         *exec.Cmd
 }
@@ -36,6 +40,7 @@ func NewHotspot(runCmd, deviceName, passPhrase string, gracePeriod time.Duration
 func (h *Hotspot) SetLink(link bool, deviceNames []string) {
 	h.Lock()
 	defer h.Unlock()
+	link = false
 	if !h.started || h.link != link {
 		h.started = true
 		h.link = link
@@ -78,6 +83,11 @@ func (h *Hotspot) stop() {
 		h.cmd.Wait()
 		h.cmd = nil
 	}
+
+	if h.quit != nil {
+		<-h.quit
+		h.quit = nil
+	}
 }
 
 func (h *Hotspot) start() {
@@ -89,6 +99,21 @@ func (h *Hotspot) start() {
 	h.timer = time.AfterFunc(h.gracePeriod, h.run)
 }
 
+func (h *Hotspot) makePskFile() (string, error) {
+	if h.passPhrase == "" {
+		return "", nil
+	}
+	pskFile, err := ioutil.TempFile(os.TempDir(), "wland")
+	if err != nil {
+		return "", err
+	}
+	defer pskFile.Close()
+	if _, err := pskFile.WriteString(fmt.Sprintf("00:00:00:00:00:00 %s\n", h.passPhrase)); err != nil {
+		return "", err
+	}
+	return pskFile.Name(), nil
+}
+
 func (h *Hotspot) run() {
 	h.Lock()
 	if !h.running {
@@ -97,17 +122,32 @@ func (h *Hotspot) run() {
 	}
 
 	if !network.IsInterfaceWifi(h.deviceName) {
-		// Do nothing, when device is not there or no wifi device.
+		// Do nothing, when device is not there or no wifi device
 		h.timer = time.AfterFunc(h.gracePeriod, h.run)
 		h.Unlock()
 		return
 	}
 
-	log.Println("starting hotspot ...")
+	// Prepare command
 	command := strings.Split(h.runCmd, " ")
-	command = append(command, h.deviceName, h.passPhrase)
+	command = append(command, h.deviceName)
+
+	pskFileName, err := h.makePskFile()
+	if err != nil {
+		log.Println("failed to create PSK file", err)
+		return
+	}
+	if pskFileName != "" {
+		command = append(command, pskFileName)
+		log.Println("hotspot will be encrypted")
+	} else {
+		log.Println("hotspot will not be encrypted")
+	}
+
+	log.Println("starting hotspot ...")
 	cmd := exec.Command(command[0], command[1:]...)
 	h.cmd = cmd
+	h.quit = make(chan bool, 1)
 	h.Unlock()
 
 	stdout, err := cmd.StdoutPipe()
@@ -129,6 +169,10 @@ func (h *Hotspot) run() {
 	}
 
 	<-wait
+	if pskFileName != "" {
+		os.Remove(pskFileName)
+	}
+	h.quit <- true
 
 	h.Lock()
 	if h.running && h.cmd == cmd {
@@ -141,4 +185,5 @@ func (h *Hotspot) run() {
 		h.stop()
 		h.Unlock()
 	}
+
 }

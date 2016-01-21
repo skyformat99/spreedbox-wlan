@@ -3,7 +3,7 @@
 set -e
 
 DEVICE="$1"
-PASSPHRASE="$2"
+PSKFILE="$2"
 SSID="spreedbox"
 HOSTNAME="spreedbox.local"
 NETWORK_PREFIX="192.168.43"
@@ -73,12 +73,12 @@ auth_algs=3
 wmm_enabled=1
 ap_isolate=1
 EOL
-	if [ -n "${PASSPHRASE}" ]; then
+	if [ -n "${PSKFILE}" ]; then
 		cat >>hostapd.conf <<EOL
 wpa=2
 wpa_key_mgmt=WPA-PSK
 rsn_pairwise=CCMP
-wpa_passphrase=${PASSPHRASE}
+wpa_psk_file=${PSKFILE}
 EOL
 	fi
 	echo "Starting hostapd ..."
