@@ -40,7 +40,6 @@ func NewHotspot(runCmd, deviceName, passPhrase string, gracePeriod time.Duration
 func (h *Hotspot) SetLink(link bool, deviceNames []string) {
 	h.Lock()
 	defer h.Unlock()
-	link = false
 	if !h.started || h.link != link {
 		h.started = true
 		h.link = link
