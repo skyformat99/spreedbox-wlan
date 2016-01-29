@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"golang.struktur.de/spreedbox/spreedbox-go/common"
 	"golang.struktur.de/spreedbox/spreedbox-wlan/wlan"
 	"log"
@@ -8,7 +9,8 @@ import (
 )
 
 func main() {
-	if err := common.SetupLogging(); err != nil {
+	flag.Parse()
+	if err := common.SetupLogfile(common.GetLogfilename()); err != nil {
 		log.Println("Could not setup logging:", err)
 		os.Exit(1)
 	}
