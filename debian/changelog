@@ -1,3 +1,9 @@
+spreedbox-wlan (0.3.3) trusty; urgency=low
+
+  * Update to spreedbox-go 0.1.3
+
+ -- Joachim Bauch <bauch@struktur.de>  Fri, 29 Jan 2016 13:13:44 +0100
+
 spreedbox-wlan (0.3.2) trusty; urgency=low
 
   * Updated to golang-spreedbox-go-dev 0.1.2
