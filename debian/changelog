@@ -1,3 +1,11 @@
+spreedbox-wlan (0.3.2) trusty; urgency=low
+
+  * Updated to golang-spreedbox-go-dev 0.1.2
+  * Use new API to setup logging.
+  * Log to syslog by default.
+
+ -- Joachim Bauch <bauch@struktur.de>  Fri, 29 Jan 2016 11:08:00 +0100
+
 spreedbox-wlan (0.3.1) trusty; urgency=medium
 
   * Removed test code.
