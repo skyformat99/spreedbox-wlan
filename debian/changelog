@@ -1,3 +1,9 @@
+spreedbox-wlan (0.3.4) trusty; urgency=low
+
+  * Don't create log directory, logging to syslog by default.
+
+ -- Joachim Bauch <bauch@struktur.de>  Mon, 01 Feb 2016 16:06:14 +0100
+
 spreedbox-wlan (0.3.3) trusty; urgency=low
 
   * Update to spreedbox-go 0.1.3
