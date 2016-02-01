@@ -23,9 +23,9 @@ case "$1" in
        fi
 
        # Create the log directory.
-       test -e $WLAND_SERVICE_LOG_DIR || mkdir -p $WLAND_SERVICE_LOG_DIR
-       chown -R $WLAND_SERVICE_USER:$WLAND_SERVICE_GROUP $WLAND_SERVICE_LOG_DIR
-       chmod 700 $WLAND_SERVICE_LOG_DIR
+       #test -e $WLAND_SERVICE_LOG_DIR || mkdir -p $WLAND_SERVICE_LOG_DIR
+       #chown -R $WLAND_SERVICE_USER:$WLAND_SERVICE_GROUP $WLAND_SERVICE_LOG_DIR
+       #chmod 700 $WLAND_SERVICE_LOG_DIR
 
        # Create the home directory.
        test -e $WLAND_SERVICE_HOME || mkdir -p $WLAND_SERVICE_HOME
