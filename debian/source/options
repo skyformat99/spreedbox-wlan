@@ -1,4 +1,6 @@
 tar-ignore
+tar-ignore = "bin"
+tar-ignore = "bin/*"
 tar-ignore = "vendor"
 tar-ignore = "vendor/*"
 
