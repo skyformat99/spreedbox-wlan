@@ -7,7 +7,33 @@ import (
 	"testing"
 )
 
-func Test_GeneratePassword(t *testing.T) {
+func IsUnsupportedError(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	return strings.HasPrefix(err.Error(), "unsupported")
+}
+
+func Test_GeneratePassword_unknown_version(t *testing.T) {
+	if _, err := GenerateDevicePassword(-1, 10); !IsUnsupportedError(err) {
+		t.Error("Unknown versions should not be supported")
+	}
+}
+
+func Test_GeneratePassword_invalid_length(t *testing.T) {
+	if _, err := GenerateDevicePassword(1, -1); !IsUnsupportedError(err) {
+		t.Error("Too small lengths should not be supported")
+	}
+	if _, err := GenerateDevicePassword(1, 0); !IsUnsupportedError(err) {
+		t.Error("Too small lengths should not be supported")
+	}
+	if _, err := GenerateDevicePassword(1, 65); !IsUnsupportedError(err) {
+		t.Error("Too large lengths should not be supported")
+	}
+}
+
+func do_Test_GeneratePassword(version int, t *testing.T) {
 	_, err := os.Stat(efuseMacAddressFilename)
 	if os.IsNotExist(err) {
 		// Fallback for systems that don't have the original efuse file
@@ -27,14 +53,14 @@ func Test_GeneratePassword(t *testing.T) {
 	}
 
 	// the same password is generated on multiple calls
-	password1, err := GenerateDevicePassword(10)
+	password1, err := GenerateDevicePassword(version, 10)
 	if err != nil {
 		t.Error("Could not generate password 1", err)
 	}
 	if len(password1) != 10 {
 		t.Error("Password 1 has wrong length", password1)
 	}
-	password2, err := GenerateDevicePassword(10)
+	password2, err := GenerateDevicePassword(version, 10)
 	if err != nil {
 		t.Error("Could not generate password 2", err)
 	}
@@ -46,7 +72,7 @@ func Test_GeneratePassword(t *testing.T) {
 	}
 
 	// the length is part of the generated password
-	password3, err := GenerateDevicePassword(5)
+	password3, err := GenerateDevicePassword(version, 5)
 	if err != nil {
 		t.Error("Could not generate password 3", err)
 	}
@@ -56,4 +82,8 @@ func Test_GeneratePassword(t *testing.T) {
 	if strings.HasPrefix(password1, password3) {
 		t.Error("Password 3 should not be a prefix of password 1", password3, password1)
 	}
+}
+
+func Test_GeneratePassword_v1(t *testing.T) {
+	do_Test_GeneratePassword(1, t)
 }
