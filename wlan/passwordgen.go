@@ -16,6 +16,7 @@ type devicePasswordGenerator interface {
 }
 
 const (
+	// Genrerated with libressl-openssl rand -hex 32
 	passwordGenMagicHex = "c4f978b109c7a2c867ea856f677de245eb6fe63358a56314eebffb94009c51e9"
 )
 
