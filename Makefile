@@ -31,7 +31,7 @@ build: goget
 	GOPATH=$(GOPATH) go build $(FOLDERS)
 
 test: goget
-	GOPATH=$(GOPATH) go test $(FOLDERS)
+	GOPATH=$(GOPATH) go test -v $(FOLDERS)
 
 format:
 	find $(FOLDERS) -name *.go -print0 | xargs -0 -n 1 go fmt
