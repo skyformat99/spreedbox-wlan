@@ -34,3 +34,10 @@ Depends:
 Description: Spreedbox Wlan daemon
  Spreedbox Wlan daemon
 
+Package: spreedbox-wlanctl
+Architecture: any
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends}
+Description: Spreedbox Wlan control tool
+ This packages provives the wlanctl helper to get wlan related stuff.
