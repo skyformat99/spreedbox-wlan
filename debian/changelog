@@ -1,3 +1,21 @@
+spreedbox-wlan (0.4.0) trusty; urgency=medium
+
+  [ Joachim Bauch ]
+  * Ignore "bin" folder for source tarball.
+  * Run tests verbosely.
+  * Added API to generate a random device-specific password (FS#3293).
+  * Added support for different versions of generated passwords.
+
+  [ Simon Eisenmann ]
+  * Added wlanctl tool.
+  * Use hardware password generator in server for hotspot default password.
+  * Added root check for defaultpassword command in wlanctl.
+  * Added wlanctl package.
+  * Added test so errors or changes to defaults get detected.
+  * Added comment how the magic secret was generated.
+
+ -- Simon Eisenmann <simon@struktur.de>  Fri, 05 Feb 2016 17:46:02 +0100
+
 spreedbox-wlan (0.3.4) trusty; urgency=low
 
   * Don't create log directory, logging to syslog by default.
