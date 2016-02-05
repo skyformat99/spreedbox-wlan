@@ -25,6 +25,12 @@ var (
 	passwordGenerators      map[int]devicePasswordGenerator
 )
 
+// DefaultPasswordGeneratorVersion specifies the default generator version.
+var DefaultPasswordGeneratorVersion = 1
+
+// DefaultPasswordLength specifies the default length for password generator.
+var DefaultPasswordLength = 16
+
 func init() {
 	var err error
 	passwordGenMagic, err = hex.DecodeString(passwordGenMagicHex)
