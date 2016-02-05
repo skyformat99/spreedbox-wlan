@@ -23,6 +23,10 @@ func main() {
 	command := args[0]
 	switch command {
 	case "defaultpassword":
+		if os.Geteuid() != 0 {
+			fmt.Fprintf(os.Stderr, "This command requires root permissions.\n")
+			os.Exit(3)
+		}
 		pw, err := wlan.GenerateDevicePassword(wlan.DefaultPasswordGeneratorVersion, wlan.DefaultPasswordLength)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err)
@@ -30,7 +34,7 @@ func main() {
 		}
 		fmt.Fprintf(os.Stdout, "%s\n", pw)
 	default:
-		fmt.Fprintf(os.Stderr, "unknown command, %s\n", command)
+		fmt.Fprintf(os.Stderr, "Unknown command: %s\n", command)
 		os.Exit(1)
 	}
 }
