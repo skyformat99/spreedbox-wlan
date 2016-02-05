@@ -21,6 +21,7 @@ const (
 
 var (
 	efuseMacAddressFilename = "/sys/class/efuse/mac"
+	usidFilename            = "/sys/class/efuse/usid"
 	passwordGenMagic        []byte
 	passwordGenerators      map[int]devicePasswordGenerator
 )
@@ -39,8 +40,8 @@ func init() {
 	}
 
 	passwordGenerators = map[int]devicePasswordGenerator{
-		// Passwords of version "1" are generated from the efuse mac address only.
-		1: &devicePasswordGeneratorMacOnly{},
+		// Passwords of version "1" are generated from the efuse.
+		1: &devicePasswordGeneratorEfuse{},
 	}
 }
 
@@ -64,10 +65,13 @@ func addFileToHash(filename string, h hash.Hash) error {
 	return nil
 }
 
-type devicePasswordGeneratorMacOnly struct {
+type devicePasswordGeneratorEfuse struct {
 }
 
-func (g *devicePasswordGeneratorMacOnly) UpdateHash(h hash.Hash) error {
+func (g *devicePasswordGeneratorEfuse) UpdateHash(h hash.Hash) error {
+	if err := addFileToHash(usidFilename, h); err != nil {
+		return err
+	}
 	if err := addFileToHash(efuseMacAddressFilename, h); err != nil {
 		return err
 	}

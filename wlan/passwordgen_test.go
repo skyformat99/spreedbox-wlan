@@ -34,7 +34,8 @@ func Test_GeneratePassword_invalid_length(t *testing.T) {
 }
 
 func do_Test_GeneratePassword(version int, t *testing.T) {
-	_, err := os.Stat(efuseMacAddressFilename)
+	var err error
+	_, err = os.Stat(efuseMacAddressFilename)
 	if os.IsNotExist(err) {
 		// Fallback for systems that don't have the original efuse file
 		fp, err := ioutil.TempFile("", "dummy-mac")
@@ -45,6 +46,23 @@ func do_Test_GeneratePassword(version int, t *testing.T) {
 		defer os.Remove(efuseMacAddressFilename)
 
 		_, err = fp.WriteString("dummy-mac-address\n")
+		if err != nil {
+			fp.Close()
+			t.Fatalf("Could not write to temporary file: %s", err)
+		}
+		fp.Close()
+	}
+	_, err = os.Stat(usidFilename)
+	if os.IsNotExist(err) {
+		// Fallback for systems that don't have the original efuse file
+		fp, err := ioutil.TempFile("", "dummy-usid")
+		if err != nil {
+			t.Fatalf("Could not create temporary file: %s", err)
+		}
+		usidFilename = fp.Name()
+		defer os.Remove(usidFilename)
+
+		_, err = fp.WriteString("dummy-usid\n")
 		if err != nil {
 			fp.Close()
 			t.Fatalf("Could not write to temporary file: %s", err)
@@ -82,6 +100,17 @@ func do_Test_GeneratePassword(version int, t *testing.T) {
 	if strings.HasPrefix(password1, password3) {
 		t.Error("Password 3 should not be a prefix of password 1", password3, password1)
 	}
+
+	// check a single password with default length and code.
+	password4Expected := "6cff1b65eb7d4f96"
+	password4, err := GenerateDevicePassword(DefaultPasswordGeneratorVersion, DefaultPasswordLength)
+	if err != nil {
+		t.Error("Could not generate password 4", err)
+	}
+	if password4 != password4Expected {
+		t.Error("Password 4 has not the expected walue", password4, password4Expected)
+	}
+
 }
 
 func Test_GeneratePassword_v1(t *testing.T) {
