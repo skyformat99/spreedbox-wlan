@@ -159,6 +159,14 @@ func setupServer() {
 		hotspotPassPhrase := os.Getenv("HOTSPOT_PASSPHRASE")
 		if hotspotPassPhrase != "" {
 			DefaultHotspotPassPhrase = hotspotPassPhrase
+		} else {
+			// Use hardware specific password by default.
+			if hwSpecificPassPhrase, err := GenerateDevicePassword(DefaultPasswordGeneratorVersion, DefaultPasswordLength); err == nil {
+				log.Printf("using hardware based default hotspot password (version %d)\n", DefaultPasswordGeneratorVersion)
+				DefaultHotspotPassPhrase = hwSpecificPassPhrase
+			} else {
+				log.Println("failed to get hardware based default hotspot password:", err)
+			}
 		}
 	}
 }
