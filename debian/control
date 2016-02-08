@@ -30,7 +30,8 @@ Depends:
  spreedbox-service,
  wireless-tools,
  wpasupplicant,
- xudnsd
+ xudnsd,
+ udhcpd
 Description: Spreedbox Wlan daemon
  Spreedbox Wlan daemon
 
