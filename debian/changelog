@@ -1,3 +1,9 @@
+spreedbox-wlan (0.4.1) trusty; urgency=medium
+
+  * Added missing dependency to udhcpd.
+
+ -- Simon Eisenmann <simon@struktur.de>  Mon, 08 Feb 2016 10:05:46 +0100
+
 spreedbox-wlan (0.4.0) trusty; urgency=medium
 
   [ Joachim Bauch ]
