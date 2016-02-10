@@ -68,8 +68,10 @@ func (h *Hotspot) Exit() {
 }
 
 func (h *Hotspot) stop() {
-	log.Println("hotspot stop")
-	h.running = false
+	if h.running {
+		log.Println("hotspot stop")
+		h.running = false
+	}
 	if h.timer != nil {
 		h.timer.Stop()
 		h.timer = nil
