@@ -1,3 +1,11 @@
+spreedbox-wlan (0.4.3) trusty; urgency=medium
+
+  * Fixed format.
+  * Fixed dependencies.
+  * Reset a running hotspot instead of stopping it on applyStoppingEvent.
+
+ -- Simon Eisenmann <simon@struktur.de>  Wed, 10 Feb 2016 17:43:58 +0100
+
 spreedbox-wlan (0.4.2) trusty; urgency=medium
 
   * Exit hotspot on network stopping event.
