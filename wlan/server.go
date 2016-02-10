@@ -61,7 +61,7 @@ func (s *Server) Serve() (err error) {
 		s.hotspot.SetLink(event.Link, event.DeviceNames)
 	})
 	s.ec.Subscribe((&network.ApplyStoppingEvent{}).Subject(), func(event *network.ApplyStoppingEvent) {
-		s.hotspot.Exit()
+		s.hotspot.Reset()
 	})
 	s.ec.RegisterService(DISCOVER_WLAN_NAME)
 	log.Println("events connected and subscribed")

@@ -47,8 +47,8 @@ func (h *Hotspot) SetLink(link bool, deviceNames []string) {
 	}
 
 	if link && h.running {
-		if len(deviceNames) == 1 && deviceNames[0] == h.deviceName {
-			// It is our device, do nothing.
+		if h.cmd != nil && len(deviceNames) == 1 && deviceNames[0] == h.deviceName {
+			// It is our device and the have a running cmd, do nothing.
 			log.Println("hotspot is running with link on own device", h.deviceName)
 			return
 		}
@@ -65,6 +65,16 @@ func (h *Hotspot) Exit() {
 	defer h.Unlock()
 	h.started = false
 	h.stop()
+}
+
+func (h *Hotspot) Reset() {
+	h.Lock()
+	defer h.Unlock()
+	if h.running {
+		log.Println("hotspot reset requested")
+		h.stop()
+		h.start()
+	}
 }
 
 func (h *Hotspot) stop() {
