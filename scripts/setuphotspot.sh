@@ -30,7 +30,6 @@ cleanup () {
 	kill -TERM ${UDHCPD_PID} 2>/dev/null || true
 	kill -TERM ${XUDNSD_PID} 2>/dev/null || true
 	flushdevice
-	restartdevice
 	rm -rf ${TMPDIR}
 	echo "Done."
 	exit
@@ -41,12 +40,6 @@ flushdevice () {
 	echo "Flushing device ${DEVICE} ..."
 	ifconfig ${DEVICE} down || true
 	ip addr flush dev ${DEVICE}
-}
-
-restartdevice() {
-	echo "Restarting device ${DEVICE} ..."
-	sleep 2
-	ifup ${DEVICE} || true
 }
 
 startdevice () {
