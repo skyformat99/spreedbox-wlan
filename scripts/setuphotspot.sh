@@ -16,10 +16,22 @@ fi
 XUDNSD=$(which xudnsd)
 HOSTAPD=$(which hostapd)
 UDHCPD=$(which udhcpd)
+LEDCONTROL=$(which ledcontrol)
 
 TMPDIR=$(mktemp -d)
 XUDNSD_PID=
 UDHCPD_PID=
+
+ledsignal() {
+	if [ ! -x "$LEDCONTROL" ]; then
+		return
+	fi
+	local args="del"
+	if [ "$1" = "on" ]; then
+		args="preset wlan-hotspot"
+	fi
+	$LEDCONTROL -id="spreedbox-wlan-hotspot" -slot=2 $args
+}
 
 cleanup () {
 	trap "" INT QUIT TERM EXIT
@@ -31,6 +43,7 @@ cleanup () {
 	kill -TERM ${XUDNSD_PID} 2>/dev/null || true
 	flushdevice
 	rm -rf ${TMPDIR}
+	ledsignal off
 	echo "Done."
 	exit
 }
@@ -98,6 +111,7 @@ EOL
 
 cd ${TMPDIR}
 
+ledsignal on
 flushdevice
 startdevice
 xudnsd
