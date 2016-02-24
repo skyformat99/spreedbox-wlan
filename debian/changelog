@@ -1,3 +1,13 @@
+spreedbox-wlan (0.4.5) trusty; urgency=medium
+
+  [ Joachim Bauch ]
+  * Added license text.
+
+  [ Simon Eisenmann ]
+  * Blink LED with wlan-hotspot in slot 2 while hotspot is active.
+
+ -- Simon Eisenmann <simon@struktur.de>  Wed, 24 Feb 2016 18:19:50 +0100
+
 spreedbox-wlan (0.4.4) trusty; urgency=medium
 
   * Exit of hotspot should not restart the device, leave what todo to whoever created the hotspot.
