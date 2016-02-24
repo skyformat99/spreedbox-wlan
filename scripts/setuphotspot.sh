@@ -30,7 +30,7 @@ ledsignal() {
 	if [ "$1" = "on" ]; then
 		args="preset wlan-hotspot"
 	fi
-	$LEDCONTROL -id="spreedbox-wlan-hotspot" -slot=2 $args
+	$LEDCONTROL -id="spreedbox-wlan-hotspot" -slot=2 $args || true
 }
 
 cleanup () {
