@@ -15,7 +15,7 @@ fi
 case "$1" in
     configure|triggered)
         if [ -e "/etc/init/spreedbox-wland.conf" ]; then
-            service spreedbox-wland restart || true
+            /usr/sbin/invoke-rc.d spreedbox-wland restart || true
         fi
         ;;
     *)
