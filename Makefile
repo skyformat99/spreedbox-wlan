@@ -31,7 +31,7 @@ build: goget
 	GOPATH=$(GOPATH) go build $(FOLDERS)
 
 test: goget
-	GOPATH=$(GOPATH) go test -v $(FOLDERS)
+	GOPATH=$(GOPATH) GORACE="halt_on_error=1" go test -v -covermode atomic -race $(FOLDERS)
 
 format:
 	find $(FOLDERS) -name *.go -print0 | xargs -0 -n 1 go fmt
