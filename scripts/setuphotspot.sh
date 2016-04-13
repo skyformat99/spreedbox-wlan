@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -e
-
 DEVICE="$1"
 PSKFILE="$2"
 SSID="spreedbox"
@@ -13,10 +11,13 @@ if [ -z "${DEVICE}" ]; then
 	exit 1
 fi
 
+LEDCONTROL=$(which ledcontrol)
+
+set -e
+
 XUDNSD=$(which xudnsd)
 HOSTAPD=$(which hostapd)
 UDHCPD=$(which udhcpd)
-LEDCONTROL=$(which ledcontrol)
 
 TMPDIR=$(mktemp -d)
 XUDNSD_PID=

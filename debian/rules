@@ -12,3 +12,4 @@ export DH_GOPKG := golang.struktur.de/spreedbox/spreedbox-wlan
 override_dh_auto_install:
 	dh_auto_install
 	install -D -m755 scripts/setuphotspot.sh $(CURDIR)/debian/spreedbox-wland/usr/share/spreedbox-wland/setuphotspot.sh
+	install -D -m755 scripts/resethotspot.sh $(CURDIR)/debian/spreedbox-wland/usr/share/spreedbox-wland/resethotspot.sh
