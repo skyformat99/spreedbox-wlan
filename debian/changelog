@@ -1,3 +1,9 @@
+spreedbox-wlan (0.4.8) trusty; urgency=medium
+
+  * Sleep 5 seconds after start before reset of hotspot so LED service has time to start (this is a hack).
+
+ -- Simon Eisenmann <simon@struktur.de>  Wed, 13 Apr 2016 17:55:13 +0200
+
 spreedbox-wlan (0.4.7) trusty; urgency=medium
 
   [ Joachim Bauch ]
