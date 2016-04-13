@@ -39,6 +39,7 @@ script
 end script
 
 post-start script
+    sleep 5
     /usr/share/spreedbox-wland/resethotspot.sh >/dev/null 2>&1 || true
 end script
 
