@@ -1,3 +1,9 @@
+spreedbox-wlan (0.5.1) trusty; urgency=medium
+
+  * Reenable automated hotspot when network goes down
+
+ -- Simon Eisenmann <simon@struktur.de>  Tue, 27 Sep 2016 16:25:55 +0200
+
 spreedbox-wlan (0.5.0) trusty; urgency=medium
 
   * Add README
