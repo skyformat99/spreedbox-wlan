@@ -79,6 +79,10 @@ func (h *Hotspot) Exit() {
 func (h *Hotspot) Reset() {
 	h.Lock()
 	defer h.Unlock()
+	// Unmark link status, reenable hotspot on reset to avoid reboot required
+	// a non-working network configuration is applied. Reset() is called when
+	// spreedbox-network ifdowns the network.
+	h.unmarkSeenLink()
 	if h.running {
 		log.Println("hotspot reset requested")
 		h.stop()
@@ -99,6 +103,22 @@ func (h *Hotspot) markSeenLink() {
 		} else {
 			log.Println("set link seen mark, automatic hotspot is now disabled")
 		}
+	}
+}
+
+func (h *Hotspot) unmarkSeenLink() {
+	if h.seenLinkMark == "" {
+		return
+	}
+
+	err := os.Remove(h.seenLinkMark)
+	if os.IsNotExist(err) {
+		return
+	}
+	if err != nil {
+		log.Println("failed to remove write link seen mark", err)
+	} else {
+		log.Println("unset link seen mark, automatic hotspot is now enabled")
 	}
 }
 
