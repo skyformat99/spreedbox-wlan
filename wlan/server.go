@@ -23,6 +23,7 @@ var DefaultHotspotCommand = ""
 var DefaultHotspotInterface = "wlan0"
 var DefaultHotspotGracePeriod = 60 * time.Second
 var DefaultHotspotPassPhrase = "spreedbox"
+var DefaultHotspotSeenLinkMarker = "/run/spreedbox-wlan-hotspot-seen-link"
 
 var setupServerOnce sync.Once
 
@@ -41,6 +42,7 @@ func NewServer() (*Server, error) {
 			DefaultHotspotInterface,
 			DefaultHotspotPassPhrase,
 			DefaultHotspotGracePeriod,
+			DefaultHotspotSeenLinkMarker,
 		),
 	}
 	return s, nil
@@ -155,6 +157,10 @@ func setupServer() {
 		if hotspotGracePeriodInt, err := strconv.Atoi(hotspotGracePeriod); err == nil {
 			DefaultHotspotGracePeriod = time.Duration(hotspotGracePeriodInt) * time.Second
 		}
+	}
+	hotspotSeenLinkMarker := os.Getenv("HOTSPOT_SEEN_LINK_MARKER")
+	if hotspotSeenLinkMarker != "" {
+		DefaultHotspotSeenLinkMarker = hotspotSeenLinkMarker
 	}
 	if os.Getenv("HOTSPOT_UNENCRYPTED") != "" {
 		DefaultHotspotPassPhrase = ""

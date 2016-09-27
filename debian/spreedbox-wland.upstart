@@ -28,6 +28,7 @@ script
     export HOTSPOT_INTERFACE
     export HOTSPOT_COMMAND
     export HOTSPOT_GRACEPERIOD
+    export HOTSPOT_SEEN_LINK_MARKER
 
     exec start-stop-daemon --start \
                            --make-pidfile \
