@@ -16,24 +16,26 @@ import (
 
 type Hotspot struct {
 	sync.RWMutex
-	runCmd      string
-	deviceName  string
-	passPhrase  string
-	gracePeriod time.Duration
-	link        bool
-	started     bool
-	running     bool
-	quit        chan (bool)
-	timer       *time.Timer
-	cmd         *exec.Cmd
+	runCmd       string
+	deviceName   string
+	passPhrase   string
+	gracePeriod  time.Duration
+	seenLinkMark string
+	link         bool
+	started      bool
+	running      bool
+	quit         chan (bool)
+	timer        *time.Timer
+	cmd          *exec.Cmd
 }
 
-func NewHotspot(runCmd, deviceName, passPhrase string, gracePeriod time.Duration) *Hotspot {
+func NewHotspot(runCmd, deviceName, passPhrase string, gracePeriod time.Duration, seenLinkMark string) *Hotspot {
 	return &Hotspot{
-		runCmd:      runCmd,
-		deviceName:  deviceName,
-		passPhrase:  passPhrase,
-		gracePeriod: gracePeriod,
+		runCmd:       runCmd,
+		deviceName:   deviceName,
+		passPhrase:   passPhrase,
+		gracePeriod:  gracePeriod,
+		seenLinkMark: seenLinkMark,
 	}
 }
 
@@ -47,15 +49,22 @@ func (h *Hotspot) SetLink(link bool, deviceNames []string) {
 	}
 
 	if link && h.running {
+		// Link and running.
 		if h.cmd != nil && len(deviceNames) == 1 && deviceNames[0] == h.deviceName {
 			// It is our device and the have a running cmd, do nothing.
 			log.Println("hotspot is running with link on own device", h.deviceName)
 			return
 		}
+		// Not our deivce.
+		h.markSeenLink()
 		log.Println("stopping hotspot as there is a link on other device", deviceNames)
 		h.stop()
+	} else if link {
+		// Link but not running, other device has link.
+		h.markSeenLink()
 	}
 	if !link && !h.running {
+		// No link and not running.
 		h.start()
 	}
 }
@@ -75,6 +84,37 @@ func (h *Hotspot) Reset() {
 		h.stop()
 		h.start()
 	}
+}
+
+func (h *Hotspot) markSeenLink() {
+	if h.seenLinkMark == "" {
+		return
+	}
+
+	if _, err := os.Stat(h.seenLinkMark); os.IsNotExist(err) {
+		// Create mark.
+		err := ioutil.WriteFile(h.seenLinkMark, []byte{}, 644)
+		if err != nil {
+			log.Println("failed to write link seen mark", err)
+		} else {
+			log.Println("set link seen mark, automatic hotspot is now disabled")
+		}
+	}
+}
+
+func (h *Hotspot) hasSeenLink() bool {
+	if h.seenLinkMark == "" {
+		return false
+	}
+
+	_, err := os.Stat(h.seenLinkMark)
+	if os.IsNotExist(err) {
+		return false
+	} else if err == nil {
+		return true
+	}
+
+	return false
 }
 
 func (h *Hotspot) stop() {
@@ -103,6 +143,10 @@ func (h *Hotspot) stop() {
 
 func (h *Hotspot) start() {
 	if h.deviceName == "" || h.runCmd == "" {
+		return
+	}
+	if h.hasSeenLink() {
+		log.Println("hotspot is disabled (link seen)")
 		return
 	}
 	log.Println("hotspot start scheduled in", h.gracePeriod)
