@@ -57,9 +57,12 @@ func (s *Server) Serve() (err error) {
 	}
 	defer s.ec.Close()
 
+	initialized := false
+
 	s.ec.Subscribe(WlanSubjectInterfaces(), s.interfaces)
 	s.ec.Subscribe(WlanSubjectScan(), s.scan)
 	s.ec.Subscribe((&network.LinkChangedEvent{}).Subject(), func(event *network.LinkChangedEvent) {
+		initialized = true
 		s.hotspot.SetLink(event.Link, event.DeviceNames)
 	})
 	s.ec.Subscribe((&network.ApplyStoppingEvent{}).Subject(), func(event *network.ApplyStoppingEvent) {
@@ -69,10 +72,27 @@ func (s *Server) Serve() (err error) {
 	log.Println("events connected and subscribed")
 
 	go func() {
-		link := &network.LinkReply{}
-		s.ec.Request(network.NetworkSubjectLink(), &network.LinkRequest{}, &link, DefaultLinkCheckTimeout)
-		if link.Success {
-			s.hotspot.SetLink(link.Link, []string{})
+		for {
+			link := &network.LinkReply{}
+			err := s.ec.Request(network.NetworkSubjectLink(), &network.LinkRequest{}, &link, DefaultLinkCheckTimeout)
+			if initialized {
+				return
+			}
+			if link.Success {
+				initialized = true
+				log.Println("initial link status is", link.Link)
+				s.hotspot.SetLink(link.Link, []string{})
+				return
+			}
+			if err == nil {
+				log.Println("initial link status request returned unsuccessfull", link.Message)
+			} else {
+				log.Println("initial link status request failed", err)
+			}
+			time.Sleep(1 * time.Second)
+			if initialized {
+				return
+			}
 		}
 	}()
 
