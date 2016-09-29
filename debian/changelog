@@ -2,7 +2,7 @@ spreedbox-wlan (0.5.2) trusty; urgency=medium
 
   * Retry initial link status fech forever
 
- -- Simon Eisenmann <simon@struktur.de>  Thu, 29 Sep 2016 14:47:26 +0200
+ -- Simon Eisenmann <simon@struktur.de>  Thu, 29 Sep 2016 15:09:22 +0200
 
 spreedbox-wlan (0.5.1) trusty; urgency=medium
 
