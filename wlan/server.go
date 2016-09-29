@@ -28,9 +28,11 @@ var DefaultHotspotSeenLinkMarker = "/run/spreedbox-wlan-hotspot-seen-link"
 var setupServerOnce sync.Once
 
 type Server struct {
-	ec      *bus.EncodedConn
-	scanner *Scanner
-	hotspot *Hotspot
+	sync.Mutex
+	ec          *bus.EncodedConn
+	scanner     *Scanner
+	hotspot     *Hotspot
+	initialized bool
 }
 
 func NewServer() (*Server, error) {
@@ -57,12 +59,12 @@ func (s *Server) Serve() (err error) {
 	}
 	defer s.ec.Close()
 
-	initialized := false
-
 	s.ec.Subscribe(WlanSubjectInterfaces(), s.interfaces)
 	s.ec.Subscribe(WlanSubjectScan(), s.scan)
 	s.ec.Subscribe((&network.LinkChangedEvent{}).Subject(), func(event *network.LinkChangedEvent) {
-		initialized = true
+		s.Lock()
+		defer s.Unlock()
+		s.initialized = true
 		s.hotspot.SetLink(event.Link, event.DeviceNames)
 	})
 	s.ec.Subscribe((&network.ApplyStoppingEvent{}).Subject(), func(event *network.ApplyStoppingEvent) {
@@ -75,13 +77,16 @@ func (s *Server) Serve() (err error) {
 		for {
 			link := &network.LinkReply{}
 			err := s.ec.Request(network.NetworkSubjectLink(), &network.LinkRequest{}, &link, DefaultLinkCheckTimeout)
-			if initialized {
+			s.Lock()
+			if s.initialized {
+				s.Unlock()
 				return
 			}
 			if link.Success {
-				initialized = true
+				s.initialized = true
 				log.Println("initial link status is", link.Link)
 				s.hotspot.SetLink(link.Link, []string{})
+				s.Unlock()
 				return
 			}
 			if err == nil {
@@ -89,10 +94,14 @@ func (s *Server) Serve() (err error) {
 			} else {
 				log.Println("initial link status request failed", err)
 			}
+			s.Unlock()
 			time.Sleep(1 * time.Second)
-			if initialized {
+			s.Lock()
+			if s.initialized {
+				s.Unlock()
 				return
 			}
+			s.Unlock()
 		}
 	}()
 
