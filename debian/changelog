@@ -1,3 +1,9 @@
+spreedbox-wlan (0.5.3) trusty; urgency=medium
+
+  * Stop wpa_supplicant before starting hotspot
+
+ -- Simon Eisenmann <simon@struktur.de>  Tue, 04 Oct 2016 15:35:05 +0200
+
 spreedbox-wlan (0.5.2) trusty; urgency=medium
 
   * Retry initial link status fech forever
