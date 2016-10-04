@@ -58,6 +58,7 @@ flushdevice () {
 
 startdevice () {
 	echo "Starting device ${DEVICE} ..."
+	wpa_action ${DEVICE} down || true
 	ifdown --force ${DEVICE} || true
 	sleep 2
 	ifconfig ${DEVICE} ${NETWORK_PREFIX}.1/24 up
