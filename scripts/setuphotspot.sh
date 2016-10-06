@@ -64,6 +64,13 @@ startdevice () {
 	ifconfig ${DEVICE} ${NETWORK_PREFIX}.1/24 up
 }
 
+nextcloud () {
+	if [ -x /etc/network/if-up.d/spreedbox-nextcloud-ifup ]; then
+		echo "Updating Nextcloud settings ..."
+		/etc/network/if-up.d/spreedbox-nextcloud-ifup || true
+	fi
+}
+
 xudnsd () {
 	echo "Starting xudnsd ..."
 	${XUDNSD} -ip=${NETWORK_PREFIX}.1 -name=${HOSTNAME}. &
@@ -116,6 +123,7 @@ cd ${TMPDIR}
 ledsignal on
 flushdevice
 startdevice
+nextcloud
 xudnsd
 hostapd
 udhcpd
