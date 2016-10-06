@@ -1,3 +1,9 @@
+spreedbox-wlan (0.5.4) trusty; urgency=medium
+
+  * Run nextcloud ifup on hotspot
+
+ -- Simon Eisenmann <simon@struktur.de>  Thu, 06 Oct 2016 16:59:37 +0200
+
 spreedbox-wlan (0.5.3) trusty; urgency=medium
 
   * Stop wpa_supplicant before starting hotspot
