@@ -16,17 +16,18 @@ import (
 
 type Hotspot struct {
 	sync.RWMutex
-	runCmd       string
-	deviceName   string
-	passPhrase   string
-	gracePeriod  time.Duration
-	seenLinkMark string
-	link         bool
-	started      bool
-	running      bool
-	quit         chan (bool)
-	timer        *time.Timer
-	cmd          *exec.Cmd
+	runCmd        string
+	deviceName    string
+	passPhrase    string
+	gracePeriod   time.Duration
+	seenLinkMark  string
+	seenLinkTimer *time.Timer
+	link          bool
+	started       bool
+	running       bool
+	quit          chan (bool)
+	timer         *time.Timer
+	cmd           *exec.Cmd
 }
 
 func NewHotspot(runCmd, deviceName, passPhrase string, gracePeriod time.Duration, seenLinkMark string) *Hotspot {
@@ -64,6 +65,11 @@ func (h *Hotspot) SetLink(link bool, deviceNames []string) {
 		h.markSeenLink()
 	}
 	if !link {
+		if h.seenLinkTimer != nil {
+			// Kill seen link which might be in progress.
+			h.seenLinkTimer.Stop()
+			h.seenLinkTimer = nil
+		}
 		if !h.running {
 			// No link and not running.
 			h.start()
@@ -98,6 +104,28 @@ func (h *Hotspot) Reset() {
 
 func (h *Hotspot) markSeenLink() {
 	if h.seenLinkMark == "" {
+		return
+	}
+
+	if h.seenLinkTimer != nil {
+		h.seenLinkTimer.Stop()
+	}
+
+	// Mark after we are certain.
+	h.seenLinkTimer = time.AfterFunc(30*time.Second, h.doMarkSeenLink)
+}
+
+func (h *Hotspot) doMarkSeenLink() {
+	h.Lock()
+	defer h.Unlock()
+
+	if h.seenLinkTimer == nil {
+		// Cleaned up already.
+		return
+	}
+	h.seenLinkTimer = nil
+	if !h.link {
+		// No more link, ignore mark.
 		return
 	}
 
