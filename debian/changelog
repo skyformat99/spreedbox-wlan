@@ -1,3 +1,11 @@
+spreedbox-wlan (0.5.5) trusty; urgency=medium
+
+  * Add support to remove USB wifi while hotspot is active
+  * Allow ip addr flush to fail
+  * Improve hotspot logging
+
+ -- Simon Eisenmann <simon@struktur.de>  Mon, 10 Oct 2016 11:43:57 +0200
+
 spreedbox-wlan (0.5.4) trusty; urgency=medium
 
   * Run nextcloud ifup on hotspot
