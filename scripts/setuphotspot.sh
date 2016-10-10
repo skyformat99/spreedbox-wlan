@@ -36,7 +36,7 @@ ledsignal() {
 
 cleanup () {
 	trap "" INT QUIT TERM EXIT
-	echo "Stopping ..."
+	echo "hotspot stopping ..."
 	if [ -e hostapd.pid ]; then
 		kill -TERM $(cat hostapd.pid) 2>/dev/null || true
 	fi
@@ -45,19 +45,19 @@ cleanup () {
 	flushdevice
 	rm -rf ${TMPDIR}
 	ledsignal off
-	echo "Done."
+	echo "hotspot done."
 	exit
 }
 trap "cleanup" INT QUIT TERM EXIT
 
 flushdevice () {
-	echo "Flushing device ${DEVICE} ..."
+	echo "hotspot flushing device ${DEVICE} ..."
 	ifconfig ${DEVICE} down || true
-	ip addr flush dev ${DEVICE}
+	ip addr flush dev ${DEVICE} || true
 }
 
 startdevice () {
-	echo "Starting device ${DEVICE} ..."
+	echo "hotspot starting device ${DEVICE} ..."
 	wpa_action ${DEVICE} down || true
 	ifdown --force ${DEVICE} || true
 	sleep 2
@@ -66,13 +66,13 @@ startdevice () {
 
 nextcloud () {
 	if [ -x /etc/network/if-up.d/spreedbox-nextcloud-ifup ]; then
-		echo "Updating Nextcloud settings ..."
+		echo "hotspot updating Nextcloud settings ..."
 		/etc/network/if-up.d/spreedbox-nextcloud-ifup || true
 	fi
 }
 
 xudnsd () {
-	echo "Starting xudnsd ..."
+	echo "hotspot starting xudnsd ..."
 	${XUDNSD} -ip=${NETWORK_PREFIX}.1 -name=${HOSTNAME}. &
 	XUDNSD_PID=$!
 }
@@ -96,7 +96,7 @@ rsn_pairwise=CCMP
 wpa_psk_file=${PSKFILE}
 EOL
 	fi
-	echo "Starting hostapd ..."
+	echo "hotspot starting hostapd ..."
 	${HOSTAPD} -B -P hostapd.pid hostapd.conf
 }
 
@@ -112,7 +112,7 @@ opt		subnet	255.255.255.0
 opt		router	${NETWORK_PREFIX}.1
 opt		dns		${NETWORK_PREFIX}.1
 EOL
-	echo "Starting udhcpd ..."
+	echo "hotspot starting udhcpd ..."
 	touch udhcpd.leases
 	${UDHCPD} -f udhcpd.conf &
 	UDHCPD_PID=$!
@@ -128,5 +128,5 @@ xudnsd
 hostapd
 udhcpd
 
-echo "Running ${UDHCPD_PID} ..."
+echo "hotspot running ${UDHCPD_PID} ..."
 wait ${UDHCPD_PID}
