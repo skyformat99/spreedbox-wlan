@@ -53,7 +53,7 @@ trap "cleanup" INT QUIT TERM EXIT
 flushdevice () {
 	echo "Flushing device ${DEVICE} ..."
 	ifconfig ${DEVICE} down || true
-	ip addr flush dev ${DEVICE}
+	ip addr flush dev ${DEVICE} || true
 }
 
 startdevice () {
