@@ -63,9 +63,15 @@ func (h *Hotspot) SetLink(link bool, deviceNames []string) {
 		// Link but not running, other device has link.
 		h.markSeenLink()
 	}
-	if !link && !h.running {
-		// No link and not running.
-		h.start()
+	if !link {
+		if !h.running {
+			// No link and not running.
+			h.start()
+		} else if h.cmd != nil && h.cmd.Process != nil {
+			// No link and have cmd, trigger exit - probably device removed.
+			log.Println("terminating hotspot as no link and running - device removed?")
+			h.cmd.Process.Signal(syscall.SIGTERM)
+		}
 	}
 }
 
