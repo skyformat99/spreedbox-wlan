@@ -13,8 +13,7 @@ The wi-fi hotspot starts under the following conditions:
 
  - Wi-Fi interface is available.
  - There is no link on any device.
- - There never was a link on any device for longer than 30 seconds since the
-   last boot (link-seen flag).
+ - The `link-seen` mark is not set.
  - Network configuration not changed since one minute (not fresh).
  - The other conditions have not changed for one minute.
 
@@ -37,6 +36,16 @@ the hotspot starts again after at most 1 minute after device availabilty.
 
 To connect to the Spreedbox web interface when using the Wi-Fi hotspot, open up
 a web browser and go to https://spreedbox/ or https://192.168.43.1/.
+
+### Link-seen mark
+
+Spreedbox wlan automatically disables the hotspot, by creating a `link-seen`
+marker file at `/run/spreedbox/wland/seen-link`. The file is created whenever
+there was a link on any network device not managed by the hotspot for longer
+than 30 seconds. Also the flag is removed automatically whenever the network
+configuration changes. The location at `/run` is not persistent, mean every boot
+starts without the flag set and allows the hotspot to start when all the other
+conditions are met.
 
 ### Wi-Fi hotspot network
 
