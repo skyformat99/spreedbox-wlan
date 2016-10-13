@@ -1,3 +1,11 @@
+spreedbox-wlan (0.5.7) trusty; urgency=medium
+
+  * Add hotspot mode docs
+  * Add link-seen mark docs
+  * Restore wlan after hotspot exit
+
+ -- Simon Eisenmann <simon@struktur.de>  Thu, 13 Oct 2016 12:11:54 +0200
+
 spreedbox-wlan (0.5.6) trusty; urgency=medium
 
   * Delay link seen mark for 30 seconds
