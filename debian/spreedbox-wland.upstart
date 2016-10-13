@@ -27,6 +27,7 @@ script
     # Export hotspot parameters
     export HOTSPOT_INTERFACE
     export HOTSPOT_COMMAND
+    export HOTSPOT_RESTORE_COMMAND
     export HOTSPOT_GRACEPERIOD
     export HOTSPOT_SEEN_LINK_MARKER
 

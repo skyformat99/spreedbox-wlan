@@ -17,6 +17,7 @@ import (
 type Hotspot struct {
 	sync.RWMutex
 	runCmd        string
+	restoreCmd    string
 	deviceName    string
 	passPhrase    string
 	gracePeriod   time.Duration
@@ -30,9 +31,10 @@ type Hotspot struct {
 	cmd           *exec.Cmd
 }
 
-func NewHotspot(runCmd, deviceName, passPhrase string, gracePeriod time.Duration, seenLinkMark string) *Hotspot {
+func NewHotspot(runCmd, restoreCmd, deviceName, passPhrase string, gracePeriod time.Duration, seenLinkMark string) *Hotspot {
 	return &Hotspot{
 		runCmd:       runCmd,
+		restoreCmd:   restoreCmd,
 		deviceName:   deviceName,
 		passPhrase:   passPhrase,
 		gracePeriod:  gracePeriod,
@@ -59,7 +61,7 @@ func (h *Hotspot) SetLink(link bool, deviceNames []string) {
 		// Not our deivce.
 		h.markSeenLink()
 		log.Println("stopping hotspot as there is a link on other device", deviceNames)
-		h.stop()
+		h.stop(true)
 	} else if link {
 		// Link but not running, other device has link.
 		h.markSeenLink()
@@ -85,7 +87,7 @@ func (h *Hotspot) Exit() {
 	h.Lock()
 	defer h.Unlock()
 	h.started = false
-	h.stop()
+	h.stop(true)
 }
 
 func (h *Hotspot) Reset() {
@@ -97,7 +99,7 @@ func (h *Hotspot) Reset() {
 	h.unmarkSeenLink()
 	if h.running {
 		log.Println("hotspot reset requested")
-		h.stop()
+		h.stop(false)
 		h.start()
 	}
 }
@@ -171,7 +173,7 @@ func (h *Hotspot) hasSeenLink() bool {
 	return false
 }
 
-func (h *Hotspot) stop() {
+func (h *Hotspot) stop(restore bool) {
 	if h.running {
 		log.Println("hotspot stop")
 		h.running = false
@@ -192,6 +194,35 @@ func (h *Hotspot) stop() {
 	if h.quit != nil {
 		<-h.quit
 		h.quit = nil
+	} else {
+		// No need to restore, if was not waiting on quit.
+		restore = false
+	}
+
+	if restore && h.restoreCmd != "" {
+		log.Println("restoring device after hotspot exit ...")
+		command := strings.Split(h.restoreCmd, " ")
+		command = append(command, h.deviceName)
+		cmd := exec.Command(command[0], command[1:]...)
+		if err := cmd.Start(); err != nil {
+			log.Println("failed to restore device after hotspot exit", err)
+		} else {
+			done := make(chan error, 1)
+			go func() {
+				done <- cmd.Wait()
+			}()
+			select {
+			case <-time.After(10 * time.Second):
+				log.Println("restore device timed out")
+				if err := cmd.Process.Kill(); err != nil {
+					log.Println("failed to kill restore device process", err)
+				}
+			case err := <-done:
+				if err != nil {
+					log.Println("restore device after hotspot failed", err)
+				}
+			}
+		}
 	}
 }
 
@@ -291,7 +322,7 @@ func (h *Hotspot) run() {
 		// Restart when still marked running.
 		h.run()
 	} else {
-		h.stop()
+		h.stop(false)
 		h.Unlock()
 	}
 

@@ -20,6 +20,7 @@ const (
 
 var DefaultLinkCheckTimeout = 5 * time.Second
 var DefaultHotspotCommand = ""
+var DefaultHotspotRestoreCommand = ""
 var DefaultHotspotInterface = "wlan0"
 var DefaultHotspotGracePeriod = 60 * time.Second
 var DefaultHotspotPassPhrase = "spreedbox"
@@ -41,6 +42,7 @@ func NewServer() (*Server, error) {
 		scanner: NewScanner(),
 		hotspot: NewHotspot(
 			DefaultHotspotCommand,
+			DefaultHotspotRestoreCommand,
 			DefaultHotspotInterface,
 			DefaultHotspotPassPhrase,
 			DefaultHotspotGracePeriod,
@@ -176,6 +178,10 @@ func setupServer() {
 	hotspotCommand := os.Getenv("HOTSPOT_COMMAND")
 	if hotspotCommand != "" {
 		DefaultHotspotCommand = hotspotCommand
+	}
+	hotspotRestoreCommand := os.Getenv("HOTSPOT_RESTORE_COMMAND")
+	if hotspotRestoreCommand != "" {
+		DefaultHotspotRestoreCommand = hotspotRestoreCommand
 	}
 	hotspotInterface := os.Getenv("HOTSPOT_INTERFACE")
 	if hotspotInterface != "" {
